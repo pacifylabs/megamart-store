@@ -1,0 +1,110 @@
+@import "tailwindcss";
+.hero-prev,
+.hero-next,
+.swiper-button-prev,
+.swiper-button-next {
+  width: 44px;
+  height: 44px;
+  border-radius: 9999px;
+  background: white;
+  place-items: center;
+  box-shadow: 0 6px 16px rgba(11, 35, 64, 0.12);
+  border: 1px solid rgba(15, 23, 42, 0.06);
+}
+.hero-prev svg,
+.hero-next svg,
+.swiper-button-prev::after,
+.swiper-button-next::after {
+  color: #0f172a;
+}
+.swiper-button-prev {
+  left: 8px;
+  right: auto;
+}
+.swiper-button-next {
+  right: 8px;
+  left: auto;
+}
+.swiper-pagination-bullet {
+  background: #d1d5db;
+  width: 8px;
+  height: 8px;
+  opacity: 1;
+  text-align: left;
+}
+.swiper-pagination-bullet-active {
+  background: #0369a1;
+}
+.swiper-slide .rounded-xl {
+  border-radius: 12px;
+}
+.product-card-border {
+  border-color: #e6eef2;
+}
+.category-ring {
+  border: 1px solid #eef6fb;
+  box-shadow: 0 6px 16px rgba(14, 50, 91, 0.04);
+  .hero-prev,
+  .hero-next {
+    z-index: 20;
+  }
+}
+@media (max-width: 1024px) {
+  .max-w-\[1200px\] {
+    max-width: 960px;
+  }
+}
+.hide-scrollbar {
+  scrollbar-width: none;
+  -ms-overflow-style: none;
+}
+.hide-scrollbar::-webkit-scrollbar {
+  display: none;
+}
+.logo-bg {
+  background-image: url("/src/assets/bg-logo.svg");
+  background-repeat: repeat;
+  background-size: contain;
+}
+/* const subtotal = items.reduce((acc, item) => acc + item.price, 0);
+  const deliveryFee = 5.00;
+  const discountRate = 0.4;
+  const discountAmount = subtotal * discountRate;
+  const total = subtotal + deliveryFee - discountAmount;
+
+  return (
+
+      
+
+      <div className="mb-4">
+        <label className="text-sm text-gray-600">Promo Code Applied:</label>
+        <span className="ml-2 px-2 py-1 bg-green-100 text-green-700 rounded font-medium">ADJ3AK</span>
+      </div>
+
+      <div className="space-y-2 text-gray-700 mb-4">
+        <div className="flex justify-between">
+          <span>Subtotal:</span>
+          <span>${subtotal.toFixed(2)}</span>
+        </div>
+        <div className="flex justify-between">
+          <span>Delivery Fee:</span>
+          <span>${deliveryFee.toFixed(2)}</span>
+        </div>
+        <div className="flex justify-between text-red-600">
+          <span>Discount (40%):</span>
+          <span>-${discountAmount.toFixed(2)}</span>
+        </div>
+        <hr className="my-2" />
+        <div className="flex justify-between text-lg font-semibold">
+          <span>Total:</span>
+          <span>${total.toFixed(2)}</span>
+        </div>
+      </div>
+
+      <button className="w-full bg-green-600 hover:bg-green-700 text-white py-3 rounded-md font-bold transition">
+        Checkout for ${total.toFixed(2)}
+      </button>
+    </div> 
+  );
+};
+*/

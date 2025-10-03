@@ -1,30 +1,34 @@
 import React, { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
+import { login } from "../services/authServices"; // ✅ import login
 import "../App.css";
 
 function LoginPage() {
-  const [form, setForm] = useState({ username: "", password: "" });
+  const [form, setForm] = useState({ email: "", password: "" });
   const [error, setError] = useState("");
   const [success, setSuccess] = useState("");
   const [showPassword, setShowPassword] = useState(false);
+  const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
 
-  const handleChange = (e) => {
-    setForm({ ...form, [e.target.name]: e.target.value });
-  };
-
-  const handleLogin = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
     setError("");
     setSuccess("");
-    if (!form.username || !form.password) {
-      setError("Please input your username and email");
-      return;
+    setLoading(true);
+
+    try {
+      const response = await login(form);
+      const { data, status } = response;
+      if(status === 200){
+        setSuccess("✅ Login successful! Redirecting...");
+        setTimeout(() => navigate("/listing"), 1500);
+      }
+    } catch (err) {
+      setError(err.response?.data?.message || "Invalid credentials");
+    } finally {
+      setLoading(false);
     }
-    setSuccess("Login successful! Redirecting...");
-    setTimeout(() => {
-      navigate("/");
-    }, 1500);
   };
 
   return (
@@ -33,7 +37,7 @@ function LoginPage() {
         <h2 className="text-3xl font-bold text-blue-500 text-center mb-6">
           Welcome Back 👋
         </h2>
-        <p className="text-sm text-center text-grey-500 mb-6">
+        <p className="text-sm text-center text-gray-500 mb-6">
           Login to your MegaMart account
         </p>
 
@@ -44,17 +48,17 @@ function LoginPage() {
           <p className="text-green-600 text-sm mb-4 text-center">{success}</p>
         )}
 
-        <form className="space-y-5" onSubmit={handleLogin}>
+        <form className="space-y-5" onSubmit={handleSubmit}>
           <div>
             <label className="block text-gray-700 mb-1 text-sm font-medium">
-              Username
+              Email
             </label>
             <input
-              type="text"
-              name="username"
-              placeholder="Enter your username"
-              value={form.username}
-              onChange={handleChange}
+              type="email"
+              name="email"
+              placeholder="Enter your email"
+              value={form.email}
+              onChange={(e) => setForm({ ...form, email: e.target.value })}
               className="w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-600"
               required
             />
@@ -68,7 +72,7 @@ function LoginPage() {
               name="password"
               placeholder="Enter your password"
               value={form.password}
-              onChange={handleChange}
+              onChange={(e) => setForm({ ...form, password: e.target.value })}
               className="w-full px-4 py-2 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-blue-600"
               required
             />
@@ -87,9 +91,12 @@ function LoginPage() {
           </div>
           <button
             type="submit"
-            className="w-full bg-blue-600 text-white py-2 rounded-lg font-semibold hover:bg-blue-700 transition"
+            disabled={loading}
+            className={`w-full ${
+              loading ? "bg-gray-400" : "bg-blue-600 hover:bg-blue-700"
+            } text-white py-2 rounded-lg font-semibold transition`}
           >
-            Login
+            {loading ? "Logging in..." : "Login"}
           </button>
         </form>
 
@@ -106,4 +113,5 @@ function LoginPage() {
     </div>
   );
 }
+
 export default LoginPage;

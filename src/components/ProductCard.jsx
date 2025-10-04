@@ -10,7 +10,7 @@ export default function ProductCard({ product }) {
   };
 
   const handleAddToCart = (e) => {
-    e.stopPropagation(); // Prevent navigation when clicking the button
+    e.stopPropagation();
     addToCart({
       id: product.id,
       name: product.name,
@@ -19,6 +19,7 @@ export default function ProductCard({ product }) {
           ? parseInt(product.price.replace(/[^\d]/g, ""))
           : product.price,
       img: product.image || product.img,
+      quantity: 1,
     });
   };
 

@@ -1,28 +1,28 @@
-import accesories from "../assets/accessories.jpeg";
+import { default as accesories, default as watches } from "../assets/accessories.jpeg";
+import cherry from "../assets/cherry.jpeg";
+import daily from "../assets/daily.jpeg";
+import fruits from "../assets/fruits.jpeg";
 import furnitures from "../assets/furnitures.jpeg";
-import watches from "../assets/accessories.jpeg";
 import m13 from "../assets/galaxy m13.jpeg";
 import m33 from "../assets/galaxy m33.jpeg";
 import m53 from "../assets/galaxy m53.jpeg";
+import iphone from "../assets/iphone.jpeg";
+import mango from "../assets/mango.jpeg";
+import oppo from "../assets/oppo.jpeg";
+import realme from "../assets/realme.jpeg";
 import s22 from "../assets/s22 ultra.jpeg";
 import s23 from "../assets/s23 ultra.jpeg";
-import wearable from "../assets/wearable.png";
-import summer from "../assets/summer.png";
-import smartphones from "../assets/smartphones.png";
-import realme from "../assets/realme.jpeg";
-import oppo from "../assets/oppo.jpeg";
-import iphone from "../assets/iphone.jpeg";
-import xiaomi from "../assets/xiaomi.jpeg";
 import samsung from "../assets/samsung.jpeg";
-import cherry from "../assets/cherry.jpeg";
-import mango from "../assets/mango.jpeg";
-import fruits from "../assets/fruits.jpeg";
-import daily from "../assets/daily.jpeg";
+import smartphones from "../assets/smartphones.png";
 import strawberry from "../assets/strawberry.jpeg";
+import summer from "../assets/summer.png";
 import vegetables from "../assets/vegetables.jpeg";
+import wearable from "../assets/wearable.png";
+import xiaomi from "../assets/xiaomi.jpeg";
 
 export const phones = [
   {
+    id: 1,
     name: "Galaxy S22 Ultra",
     price: "₹32,999",
     cut: "₹40,999",
@@ -32,6 +32,7 @@ export const phones = [
     category: "Phones",
   },
   {
+    id: 2,
     name: "Galaxy M13 (4GB | 64 GB)",
     price: "₹10,499",
     cut: "₹14,999",
@@ -41,6 +42,7 @@ export const phones = [
     category: "Phones",
   },
   {
+    id: 3,
     name: "Galaxy M33 (4GB | 64 GB)",
     price: "₹16,999",
     cut: "₹24,999",
@@ -50,6 +52,7 @@ export const phones = [
     category: "Phones"
   },
   {
+    id: 4,
     name: "Galaxy M53 (4GB | 64 GB)",
     price: "₹31,999",
     cut: "₹40,999",
@@ -59,6 +62,7 @@ export const phones = [
     category: "Phones",
   },
   {
+    id: 5,
     name: "Galaxy S23 Ultra",
     price: "₹67,999",
     cut: "₹85,999",
@@ -183,25 +187,25 @@ export const customerServices = [
 ];
 export const essential = [
   {
-    id: 1,
+    id: 11,
     name: "Sony WH-1000XM5 Headphones",
-    price: 349,
+    price: "₹34,999",
     image: "",
     category: "Electronics",
     discount: "50%",
   },
   {
-    id: 2,
-    name: "LG 55” 4K Smart TV",
-    price: 599,
+    id: 12,
+    name: "LG 55\" 4K Smart TV",
+    price: "₹59,999",
     image: "",
     category: "Electronics",
     discount: "50%",
   },
   {
-    id: 3,
+    id: 13,
     name: "Apple AirPods Pro",
-    price: 249,
+    price: "₹24,999",
     image: "",
     category: "Electronics",
     discount: "50%",

@@ -1,5 +1,5 @@
-import { createContext, useState, useEffect } from "react";
-import { login, signup, refreshToken } from "../services/authService";
+import { createContext, useContext, useEffect, useState } from "react";
+import { login, refreshToken, signup } from "../services/authService";
 
 export const AuthContext = createContext();
 
@@ -61,4 +61,13 @@ export const AuthProvider = ({ children }) => {
       {children}
     </AuthContext.Provider>
   );
+};
+
+// Custom hook to use auth context
+export const useAuth = () => {
+  const context = useContext(AuthContext);
+  if (!context) {
+    throw new Error('useAuth must be used within an AuthProvider');
+  }
+  return context;
 };

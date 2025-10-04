@@ -1,19 +1,54 @@
-import { createContext, useContext, useState } from "react";
+import { createContext, useContext, useEffect, useState } from "react";
+import { useAuth } from "./AuthContext";
 
 const CartContext = createContext();
 
 export function CartProvider({ children }) {
+  const { user } = useAuth();
   const [cartItems, setCartItems] = useState([]);
+
+  // Generate user-specific localStorage key
+  const getCartKey = () => {
+    return user?.id ? `megamart-cart-${user.id}` : 'megamart-cart-guest';
+  };
+
+  // Load cart items from localStorage when user changes
+  useEffect(() => {
+    if (user === undefined) return; // Wait for auth to initialize
+
+    try {
+      const cartKey = getCartKey();
+      const savedCart = localStorage.getItem(cartKey);
+      setCartItems(savedCart ? JSON.parse(savedCart) : []);
+    } catch (error) {
+      console.error('Error loading cart from localStorage:', error);
+      setCartItems([]);
+    }
+  }, [user]);
+
+  // Save to localStorage whenever cartItems changes
+  useEffect(() => {
+    if (user === undefined) return; // Don't save until auth is initialized
+
+    try {
+      const cartKey = getCartKey();
+      localStorage.setItem(cartKey, JSON.stringify(cartItems));
+    } catch (error) {
+      console.error('Error saving cart to localStorage:', error);
+    }
+  }, [cartItems, user]);
 
   const addToCart = (product) => {
     setCartItems((prev) => {
       const existing = prev.find((item) => item.id === product.id);
       if (existing) {
         return prev.map((item) =>
-          item.id === product.id ? { ...item, qty: item.qty + 1 } : item
+          item.id === product.id
+            ? { ...item, qty: item.qty + (product.quantity || 1) }
+            : item
         );
       }
-      return [...prev, { ...product, qty: 1 }];
+      return [...prev, { ...product, qty: product.quantity || 1 }];
     });
   };
 
@@ -26,19 +61,52 @@ export function CartProvider({ children }) {
       prev.map((item) =>
         item.id === id
           ? {
-              ...item,
-              qty: type === "inc" ? item.qty + 1 : Math.max(1, item.qty - 1),
-            }
+            ...item,
+            qty: type === "inc" ? item.qty + 1 : Math.max(1, item.qty - 1),
+          }
           : item
       )
     );
   };
 
+  const clearCart = () => {
+    setCartItems([]);
+    try {
+      const cartKey = getCartKey();
+      localStorage.removeItem(cartKey);
+    } catch (error) {
+      console.error('Error clearing cart from localStorage:', error);
+    }
+  };
+
+  // Clear cart when user logs out
+  useEffect(() => {
+    if (user === null) {
+      // User logged out, clear cart
+      setCartItems([]);
+    }
+  }, [user]);
+
   const cartCount = cartItems.reduce((acc, item) => acc + item.qty, 0);
+
+  const cartTotal = cartItems.reduce((acc, item) => {
+    const price = typeof item.price === "string"
+      ? parseInt(item.price.replace(/[^\d]/g, ""))
+      : item.price;
+    return acc + (price * item.qty);
+  }, 0);
 
   return (
     <CartContext.Provider
-      value={{ cartItems, addToCart, removeFromCart, updateQty, cartCount }}
+      value={{
+        cartItems,
+        addToCart,
+        removeFromCart,
+        updateQty,
+        clearCart,
+        cartCount,
+        cartTotal
+      }}
     >
       {children}
     </CartContext.Provider>

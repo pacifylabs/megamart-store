@@ -6,6 +6,7 @@ import Register from "./pages/Register";
 import Login from "./pages/Login";
 import Carts from "./pages/Carts";
 import { CartProvider } from "./context/CartContext";
+import ProductDetailsPage from "./components/ProductDetails";
 
 export default function App() {
   return (
@@ -14,6 +15,7 @@ export default function App() {
       <Routes>
         <Route path="/" element={<HeroPage />} />
         <Route path="/listing" element={<ListingPage />} />
+        <Route path="/product/:id" element={<ProductDetailsPage />} />
         <Route path="/register" element={<Register />} />
         <Route path="/login" element={<Login />} />
         <Route path="/carts" element={<Carts />} />

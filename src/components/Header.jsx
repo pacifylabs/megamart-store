@@ -3,15 +3,15 @@ import React, { useState, useEffect } from "react";
 import {
   Menu,
   Search,
-  ShoppingCart,
   MapPin,
   Truck,
   BadgePercent,
   UserPlus,
   X,
   ListFilter,
-  LogOut
+  LogOut,
 } from "lucide-react";
+import CartIcon from "../components/ui/CartIcon";
 
 export default function Header() {
   const [menuOpen, setMenuOpen] = useState(false);
@@ -27,8 +27,6 @@ export default function Header() {
     }
     setIsLoggedIn(!!token);
   }, []);
-  
-  
 
   const handleLogout = () => {
     localStorage.removeItem("accessToken");
@@ -104,15 +102,12 @@ export default function Header() {
                 <LogOut className="w-4 h-4 text-red-500" /> Logout
               </button>
             )}
-            <Link
-              to="/carts"
-              className="flex items-center gap-1 px-3 py-2 rounded-md hover:bg-slate-50"
-            >
-              <ShoppingCart className="w-4 h-4 text-blue-400" /> Cart
-            </Link>
+
+            {/* ✅ Modularized Cart */}
+            <CartIcon />
           </div>
 
-          {/* Mobile menu */}
+          {/* Mobile menu toggle */}
           <button className="md:hidden" onClick={() => setMenuOpen(!menuOpen)}>
             {menuOpen ? <X className="w-6 h-6" /> : <Menu className="w-6 h-6" />}
           </button>
@@ -145,12 +140,8 @@ export default function Header() {
               </button>
             )}
 
-            <Link
-              to="/carts"
-              className="flex items-center gap-2 px-3 py-2 rounded-md hover:bg-slate-50 w-full"
-            >
-              <ShoppingCart className="w-4 h-4" /> Cart
-            </Link>
+            {/* ✅ Modularized Cart in Mobile */}
+            <CartIcon />
           </div>
         )}
       </div>

@@ -2,6 +2,7 @@ import { useState, useEffect } from "react";
 import { useNavigate, Link } from "react-router-dom";
 import { useCart } from "../context/CartContext";
 import { ListFilter, ArrowLeft } from "lucide-react";
+import { appConfig } from "../config/appConfig";
 
 export default function CheckoutPage() {
   const navigate = useNavigate();
@@ -32,7 +33,7 @@ export default function CheckoutPage() {
 
   const handlePaystackPayment = () => {
     const handler = window.PaystackPop.setup({
-      key: 'pk_test_xxxxxxxxxxxxxxxxxxxxxxxx', // Replace with your Paystack public key
+      key: appConfig.PAYSTACK_PUBLIC_KEY,
       email: formData.email,
       amount: cartTotal * 100,
       currency: 'NGN',
@@ -65,7 +66,7 @@ export default function CheckoutPage() {
 
   const handleFlutterwavePayment = () => {
     window.FlutterwaveCheckout({
-      public_key: "FLWPUBK_TEST-xxxxxxxxxxxxxxxxxxxxxxxx-X", // Replace with your Flutterwave public key
+      public_key: appConfig.FLUTTER_PUBLIC_KEY, 
       tx_ref: "MM_" + Date.now(),
       amount: cartTotal,
       currency: "NGN",
@@ -114,7 +115,7 @@ export default function CheckoutPage() {
     ).join('\n');
     
     const message = `Hi, I want to place an order:\n\n${itemsList}\n\nTotal: ₦${cartTotal}\n\nDelivery Address:\n${formData.address}, ${formData.city}, ${formData.state}`;
-    const whatsappNumber = "2348012345678"; // Replace with seller number
+    const whatsappNumber = appConfig.STORE_ORDER_CONTACT;
     const whatsappUrl = `https://wa.me/${whatsappNumber}?text=${encodeURIComponent(message)}`;
     window.open(whatsappUrl, "_blank");
   };

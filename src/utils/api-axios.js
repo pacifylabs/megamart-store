@@ -1,9 +1,9 @@
 // src/api.js
 import axios from "axios";
 
-const API_URL = "http://localhost:3000/api"; 
+const API_URL = "https://megamart-backend-oc0q.onrender.com/api"; 
 const API = axios.create({
-  baseURL: "http://localhost:3000/api",
+  baseURL: "https://megamart-backend-oc0q.onrender.com/api",
 });
 
 // Add request interceptor to attach access token

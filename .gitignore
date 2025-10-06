@@ -10,6 +10,8 @@ node_modules/
 */node_modules/
 pnpm-lock.yaml
 
+.env
+
 dist
 dist-ssr
 *.local

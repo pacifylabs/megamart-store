@@ -14,8 +14,7 @@ export function CartProvider({ children }) {
 
   // Load cart items from localStorage when user changes
   useEffect(() => {
-    if (user === undefined) return; // Wait for auth to initialize
-
+    if (user === undefined) return;
     try {
       const cartKey = getCartKey();
       const savedCart = localStorage.getItem(cartKey);

@@ -266,9 +266,9 @@ export default function ProductDetailsPage() {
             <div className="flex gap-8">
               <button
                 onClick={() => setActiveTab("description")}
-                className={`pb-3 text-sm font-semibold transition ${
+                className={`p-4 text-sm font-semibold transition ${
                   activeTab === "description"
-                    ? "border-b-2 border-orange-600 text-orange-600"
+                    ? "border-b-2 border-orange-600 text-orange-600 outline-0"
                     : "text-gray-600 hover:text-gray-900"
                 }`}
               >
@@ -276,9 +276,9 @@ export default function ProductDetailsPage() {
               </button>
               <button
                 onClick={() => setActiveTab("specification")}
-                className={`pb-3 text-sm font-semibold transition ${
+                className={`p-4 text-sm font-semibold transition ${
                   activeTab === "specification"
-                    ? "border-b-2 border-orange-600 text-orange-600"
+                    ? "border-b-2 border-orange-600 text-orange-600 outline-0"
                     : "text-gray-600 hover:text-gray-900"
                 }`}
               >
@@ -286,9 +286,9 @@ export default function ProductDetailsPage() {
               </button>
               <button
                 onClick={() => setActiveTab("reviews")}
-                className={`pb-3 text-sm font-semibold transition ${
+                className={`p-4 text-sm font-semibold transition ${
                   activeTab === "reviews"
-                    ? "border-b-2 border-orange-600 text-orange-600"
+                    ? "border-b-2 border-orange-600 text-orange-600 outline-0"
                     : "text-gray-600 hover:text-gray-900"
                 }`}
               >

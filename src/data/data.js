@@ -23,6 +23,7 @@ import vegetables from "../assets/vegetables.jpeg";
 
 export const phones = [
   {
+    id: 4,
     name: "Galaxy S22 Ultra",
     price: "₹32,999",
     cut: "₹40,999",
@@ -30,26 +31,34 @@ export const phones = [
     discount: "55% OFF",
     img: s22,
     category: "Phones",
+    description: "A very good phone with excellent features",
+    stock: 15,
   },
   {
+    id: 5,
     name: "Galaxy M13 (4GB | 64 GB)",
     price: "₹10,499",
     cut: "₹14,999",
+    description: "A very lightweight good device",
     save: "Save - ₹4,500",
     discount: "58% OFF",
     img: m13,
     category: "Phones",
+    stock: 20,
   },
   {
+    id: 6,
     name: "Galaxy M33 (4GB | 64 GB)",
     price: "₹16,999",
     cut: "₹24,999",
     save: "Save - ₹8,000",
     discount: "50% OFF",
     img: m33,
-    category: "Phones"
+    category: "Phones",
+    stock: 15,
   },
   {
+    id: 7,
     name: "Galaxy M53 (4GB | 64 GB)",
     price: "₹31,999",
     cut: "₹40,999",
@@ -57,15 +66,19 @@ export const phones = [
     discount: "56% OFF",
     img: m53,
     category: "Phones",
+    stock: 10,
   },
   {
+    id: 8,
     name: "Galaxy S23 Ultra",
     price: "₹67,999",
     cut: "₹85,999",
+    description: "Nice",
     save: "Save - ₹18,000",
     discount: "56% OFF",
     img: s23,
     category: "Phones",
+    stock: 7,
   },
 ];
 
@@ -185,26 +198,29 @@ export const essential = [
   {
     id: 1,
     name: "Sony WH-1000XM5 Headphones",
-    price: 349,
+    price: "₹3490",
     image: "",
     category: "Electronics",
     discount: "50%",
+    stock: 30,
   },
   {
     id: 2,
     name: "LG 55” 4K Smart TV",
-    price: 599,
+    price: "₹5990",
     image: "",
     category: "Electronics",
     discount: "50%",
+    stock: 25,
   },
   {
     id: 3,
     name: "Apple AirPods Pro",
-    price: 249,
+    price: "₹2490",
     image: "",
     category: "Electronics",
     discount: "50%",
+    stock: 40,
   },
 ];
 export const mostPopularCategory = [

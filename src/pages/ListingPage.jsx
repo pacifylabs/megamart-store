@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { Search, ListFilter, ShoppingCart } from "lucide-react";
 import { essential, phones } from "../data/data";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { useCart } from "../context/CartContext";
 
 const categories = ["All", "Phones", "Essentials", "Electronics"];
@@ -11,6 +11,7 @@ export default function ListingPage() {
   const [sortOption, setSortOption] = useState("default");
   const [searchQuery, setSearchQuery] = useState("");
   const { addToCart, cartCount } = useCart();
+  const navigate = useNavigate();
 
   const products = [...essential, ...phones];
 
@@ -18,18 +19,14 @@ export default function ListingPage() {
     .filter((p) =>
       selectedCategory === "All" ? true : p.category === selectedCategory
     )
-    .filter((p) =>
-      p.name.toLowerCase().includes(searchQuery.toLowerCase())
-    )
+    .filter((p) => p.name.toLowerCase().includes(searchQuery.toLowerCase()))
     .sort((a, b) => {
       const priceA = parseInt(String(a.price).replace(/[^\d]/g, "")) || 0;
       const priceB = parseInt(String(b.price).replace(/[^\d]/g, "")) || 0;
-
       if (sortOption === "price-low") return priceA - priceB;
       if (sortOption === "price-high") return priceB - priceA;
       return 0;
     });
-
   return (
     <div className="min-h-screen bg-gray-50">
       <div className="bg-white px-4 sm:px-6 py-3 border-b border-slate-100">
@@ -49,7 +46,7 @@ export default function ListingPage() {
                 value={searchQuery}
                 onChange={(e) => setSearchQuery(e.target.value)}
                 className="w-full rounded-lg border border-[#e6eef2] bg-blue-50 px-10 py-2 text-sm placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-blue-200"
-                placeholder="Search essentials, groceries and more..."
+                placeholder="Search products"
               />
             </div>
           </div>
@@ -75,7 +72,10 @@ export default function ListingPage() {
           </div>
         </div>
       </div>
+
+      {/* Layout */}
       <div className="max-w-[95%] mx-auto px-2 sm:px-6 py-6 grid grid-cols-[80px_1fr] sm:grid-cols-[200px_1fr] gap-3 sm:gap-6">
+        {/* Categories */}
         <div className="bg-white p-2 sm:p-4 rounded-lg shadow-sm h-fit">
           <h3 className="hidden sm:block text-lg font-semibold mb-3 text-slate-700">
             Categories
@@ -97,11 +97,14 @@ export default function ListingPage() {
             ))}
           </ul>
         </div>
+
+        {/* Products */}
         <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-3 sm:gap-6">
           {filteredProducts.map((p, i) => (
             <div
               key={i}
-              className="bg-white rounded-lg border border-[#e6eef2] p-3 sm:p-4 relative flex-shrink-0 w-[160px] sm:w-auto"
+              className="bg-white rounded-lg border border-[#e6eef2] p-3 sm:p-4 relative flex-shrink-0 w-[160px] sm:w-auto cursor-pointer"
+              onClick={() => navigate(`/product/${p.id || i}`)}
             >
               {p.discount && (
                 <div className="absolute top-1 right-1 bg-blue-600 text-white text-xs px-2 py-1 rounded">
@@ -125,7 +128,10 @@ export default function ListingPage() {
                   <span className="line-through text-slate-400">{p.cut}</span>
                 )}
               </div>
-              <div className="mt-1 sm:mt-2 flex items-center justify-between">
+              <div
+                className="mt-1 sm:mt-2 flex items-center justify-between"
+                onClick={(e) => e.stopPropagation()} // prevent triggering navigate
+              >
                 {p.save && (
                   <span className="text-[10px] sm:text-[13px] text-emerald-600">
                     {p.save}
@@ -155,6 +161,3 @@ export default function ListingPage() {
     </div>
   );
 }
-
-
-

@@ -12,18 +12,15 @@ export default function Carts() {
 
   return (
     <div className="min-h-screen bg-gray-50 p-4 flex flex-col">
-      {/* Title */}
       <div className="flex items-center mb-4">
         <button
-          onClick={() => navigate("/")}
+          onClick={() => navigate("/listing")}
           className="mr-2 text-gray-600 hover:text-gray-900"
         >
           <ArrowLeft className="w-6 h-6" />
         </button>
         <h2 className="text-lg font-bold text-center flex-1">My Cart</h2>
       </div>
-
-      {/* Items */}
       <div className="flex-1 space-y-3">
         {cartItems.length === 0 ? (
           <p className="text-center text-gray-500">No products found</p>
@@ -67,8 +64,6 @@ export default function Carts() {
           ))
         )}
       </div>
-
-      {/* Summary */}
       {cartItems.length > 0 && (
         <>
           <div className="mt-4 bg-white rounded-lg p-4 border text-sm space-y-1">

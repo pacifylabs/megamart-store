@@ -26,13 +26,10 @@ export default function ListingPage() {
     .filter((p) =>
       selectedCategory === "All" ? true : p.category === selectedCategory
     )
-    .filter((p) =>
-      p.name.toLowerCase().includes(searchQuery.toLowerCase())
-    )
+    .filter((p) => p.name.toLowerCase().includes(searchQuery.toLowerCase()))
     .sort((a, b) => {
       const priceA = parseInt(String(a.price).replace(/[^\d]/g, "")) || 0;
       const priceB = parseInt(String(b.price).replace(/[^\d]/g, "")) || 0;
-
       if (sortOption === "price-low") return priceA - priceB;
       if (sortOption === "price-high") return priceB - priceA;
       return 0;

@@ -12,7 +12,7 @@ import { essentials, mostPopularCategories, customerServices } from "../data/dat
 export default function HeroPage() {
   return (
     <>
-      <Header />
+      <Header showBanner={true} showCart={true}/>
       <Topbar />
       <HeroSlider />
       <SmartphoneDeals />

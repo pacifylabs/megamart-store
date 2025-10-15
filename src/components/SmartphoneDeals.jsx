@@ -19,11 +19,17 @@ export default function SmartphoneDeals() {
         </Link>
       </div>
 
-      <div className="flex sm:grid sm:grid-cols-3 lg:grid-cols-5 gap-4 sm:gap-6 overflow-x-auto px-1 -mx-1 hide-scrollbar">
+      <div className="flex overflow-x-auto space-x-4 sm:space-x-6 px-2 hide-scrollbar snap-x snap-mandatory scroll-smooth">
         {phones.map((p) => (
-          <ProductCard key={p.id} product={p} />
+          <div
+            key={p.id}
+            className="flex-none w-[180px] sm:w-[200px] snap-start"
+          >
+            <ProductCard product={p} />
+          </div>
         ))}
       </div>
+
     </div>
   );
 }

@@ -4,6 +4,7 @@ import { useCart } from "../context/CartContext";
 import { essential, phones } from "../data/data";
 import { ListFilter, ArrowLeft } from "lucide-react";
 import CartIcon from "../components/ui/CartIcon";
+import Header from "../components/Header";
 
 export default function ProductDetailsPage() {
   const { id } = useParams();
@@ -87,7 +88,7 @@ export default function ProductDetailsPage() {
   return (
     <div className="min-h-screen bg-gray-50">
       {/* Top Navbar */}
-      <div className="bg-white px-4 sm:px-6 py-3 border-b border-slate-100">
+      {/* <div className="bg-white px-4 sm:px-6 py-3 border-b border-slate-100">
         <div className="max-w-[95%] mx-auto flex items-center justify-between gap-4">
           <div className="flex items-center gap-2">
             <Link to="/" className="flex items-center gap-2">
@@ -99,7 +100,8 @@ export default function ProductDetailsPage() {
           </div>
           <CartIcon />
         </div>
-      </div>
+      </div>*/}
+      <Header showBanner={false} showSearchBar={false} showCart={true}/>
 
       {/* Content */}
       <div className="max-w-[95%] mx-auto px-4 py-6 sm:py-8">

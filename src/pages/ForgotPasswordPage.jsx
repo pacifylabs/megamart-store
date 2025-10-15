@@ -29,7 +29,7 @@ export default function ForgotPasswordPage() {
   return (
     <div className="min-h-screen bg-gray-50 flex flex-col">
       {/* Header */}
-      <div className="bg-white px-4 sm:px-6 py-3 border-b border-slate-100">
+      {/* <div className="bg-white px-4 sm:px-6 py-3 border-b border-slate-100">
         <div className="max-w-[95%] mx-auto">
           <Link to="/" className="flex items-center gap-2 w-fit">
             <ListFilter className="w-10 h-7 text-blue-500" />
@@ -38,8 +38,9 @@ export default function ForgotPasswordPage() {
             </div>
           </Link>
         </div>
-      </div>
+      </div>*/}
 
+      <Header showBanner={false}/>
       {/* Forgot Password Form */}
       <div className="flex-1 flex items-center justify-center px-4 py-12">
         <div className="w-full max-w-md">

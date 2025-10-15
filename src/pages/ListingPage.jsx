@@ -1,11 +1,11 @@
+import { Grid3x3, List, ListFilter, Search, SlidersHorizontal, X } from "lucide-react";
 import { useState } from "react";
-import { Search, ListFilter, SlidersHorizontal, X, Grid3x3, List } from "lucide-react";
-import { essential, phones } from "../data/data";
 import { Link } from "react-router-dom";
-import { useCart } from "../context/CartContext";
-import { useAuth } from "../context/AuthContext";
 import ProductCard from "../components/ProductCard";
 import CartIcon from "../components/ui/CartIcon";
+import { useAuth } from "../context/AuthContext";
+import { useCart } from "../context/CartContext";
+import { essential, phones } from "../data/data";
 
 const categories = ["All", "Phones", "Essentials", "Electronics"];
 
@@ -156,17 +156,15 @@ export default function ListingPage() {
           <div className="flex rounded-lg border border-gray-300 overflow-hidden">
             <button
               onClick={() => setViewMode("grid")}
-              className={`p-2 ${
-                viewMode === "grid" ? "bg-blue-100 text-blue-600" : "bg-white text-gray-600"
-              }`}
+              className={`p-2 ${viewMode === "grid" ? "bg-blue-100 text-blue-600" : "bg-white text-gray-600"
+                }`}
             >
               <Grid3x3 className="w-4 h-4" />
             </button>
             <button
               onClick={() => setViewMode("list")}
-              className={`p-2 ${
-                viewMode === "list" ? "bg-blue-100 text-blue-600" : "bg-white text-gray-600"
-              }`}
+              className={`p-2 ${viewMode === "list" ? "bg-blue-100 text-blue-600" : "bg-white text-gray-600"
+                }`}
             >
               <List className="w-4 h-4" />
             </button>
@@ -214,11 +212,10 @@ export default function ListingPage() {
                     <li key={cat}>
                       <button
                         onClick={() => handleCategoryChange(cat)}
-                        className={`w-full text-left px-3 py-2 rounded-lg text-sm font-medium transition ${
-                          selectedCategory === cat
-                            ? "bg-blue-500 text-white shadow-sm"
-                            : "text-slate-600 hover:bg-blue-50"
-                        }`}
+                        className={`w-full text-left px-3 py-2 rounded-lg text-sm font-medium transition ${selectedCategory === cat
+                          ? "bg-blue-500 text-white shadow-sm"
+                          : "text-slate-600 hover:bg-blue-50"
+                          }`}
                       >
                         {cat}
                       </button>
@@ -287,11 +284,10 @@ export default function ListingPage() {
                       <li key={cat}>
                         <button
                           onClick={() => handleCategoryChange(cat)}
-                          className={`w-full text-left px-3 py-2 rounded-lg text-sm font-medium transition ${
-                            selectedCategory === cat
-                              ? "bg-blue-500 text-white"
-                              : "text-slate-600 hover:bg-blue-50"
-                          }`}
+                          className={`w-full text-left px-3 py-2 rounded-lg text-sm font-medium transition ${selectedCategory === cat
+                            ? "bg-blue-500 text-white"
+                            : "text-slate-600 hover:bg-blue-50"
+                            }`}
                         >
                           {cat}
                         </button>
@@ -415,11 +411,10 @@ function Pagination({ currentPage, totalPages, onPageChange, onNext, onPrev }) {
       <button
         onClick={onPrev}
         disabled={currentPage === 1}
-        className={`px-3 py-2 rounded-lg text-sm font-medium transition ${
-          currentPage === 1
-            ? "bg-gray-100 text-gray-400 cursor-not-allowed"
-            : "bg-white border border-gray-300 text-gray-700 hover:bg-blue-50 hover:border-blue-300"
-        }`}
+        className={`px-3 py-2 rounded-lg text-sm font-medium transition ${currentPage === 1
+          ? "bg-gray-100 text-gray-400 cursor-not-allowed"
+          : "bg-white border border-gray-300 text-gray-700 hover:bg-blue-50 hover:border-blue-300"
+          }`}
       >
         <span className="hidden sm:inline">Previous</span>
         <span className="sm:hidden">Prev</span>
@@ -440,11 +435,10 @@ function Pagination({ currentPage, totalPages, onPageChange, onNext, onPrev }) {
             <button
               key={page}
               onClick={() => onPageChange(page)}
-              className={`w-9 h-9 sm:w-10 sm:h-10 rounded-lg text-sm font-medium transition ${
-                currentPage === page
-                  ? "bg-blue-600 text-white shadow-sm"
-                  : "bg-white border border-gray-300 text-gray-700 hover:bg-blue-50 hover:border-blue-300"
-              }`}
+              className={`w-9 h-9 sm:w-10 sm:h-10 rounded-lg text-sm font-medium transition ${currentPage === page
+                ? "bg-blue-600 text-white shadow-sm"
+                : "bg-white border border-gray-300 text-gray-700 hover:bg-blue-50 hover:border-blue-300"
+                }`}
             >
               {page}
             </button>
@@ -456,11 +450,10 @@ function Pagination({ currentPage, totalPages, onPageChange, onNext, onPrev }) {
       <button
         onClick={onNext}
         disabled={currentPage === totalPages}
-        className={`px-3 py-2 rounded-lg text-sm font-medium transition ${
-          currentPage === totalPages
-            ? "bg-gray-100 text-gray-400 cursor-not-allowed"
-            : "bg-white border border-gray-300 text-gray-700 hover:bg-blue-50 hover:border-blue-300"
-        }`}
+        className={`px-3 py-2 rounded-lg text-sm font-medium transition ${currentPage === totalPages
+          ? "bg-gray-100 text-gray-400 cursor-not-allowed"
+          : "bg-white border border-gray-300 text-gray-700 hover:bg-blue-50 hover:border-blue-300"
+          }`}
       >
         Next
       </button>

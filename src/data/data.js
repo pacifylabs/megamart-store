@@ -30,6 +30,8 @@ export const phones = [
     discount: "55% OFF",
     img: s22,
     category: "Phones",
+    description: "A very good phone with excellent features",
+    stock: 15,
   },
   {
     id: 2,
@@ -40,6 +42,7 @@ export const phones = [
     discount: "58% OFF",
     img: m13,
     category: "Phones",
+    stock: 20,
   },
   {
     id: 3,
@@ -60,6 +63,7 @@ export const phones = [
     discount: "56% OFF",
     img: m53,
     category: "Phones",
+    stock: 10,
   },
   {
     id: 5,
@@ -70,6 +74,7 @@ export const phones = [
     discount: "56% OFF",
     img: s23,
     category: "Phones",
+    stock: 7,
   },
   {
     id: 6,
@@ -243,6 +248,7 @@ export const essential = [
     image: "",
     category: "Electronics",
     discount: "50%",
+    stock: 30,
   },
   {
     id: 12,
@@ -251,6 +257,7 @@ export const essential = [
     image: "",
     category: "Electronics",
     discount: "50%",
+    stock: 25,
   },
   {
     id: 13,
@@ -259,6 +266,7 @@ export const essential = [
     image: "",
     category: "Electronics",
     discount: "50%",
+    stock: 40,
   },
 ];
 export const mostPopularCategory = [

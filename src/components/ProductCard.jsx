@@ -14,6 +14,7 @@ export default function ProductCard({ product }) {
   const quantity = cartItem?.qty || 0;
 
   const handleProductClick = () => {
+    console.log("product: ", product)
     navigate(`/product/${product.id}`, { state: { product } });
   };
 
@@ -48,7 +49,7 @@ export default function ProductCard({ product }) {
   return (
     <div 
       onClick={handleProductClick}
-      className="bg-white rounded-lg border border-[#e6eef2] relative flex-shrink-0 w-[160px] sm:w-auto overflow-hidden cursor-pointer hover:shadow-lg transition-shadow h-[280px] sm:h-[330px] flex flex-col"
+      className="bg-white rounded-lg border border-[#e6eef2] relative flex-shrink-0 w-[160px] sm:w-auto overflow-hidden cursor-pointer hover:shadow-lg transition-shadow h-[290px] sm:h-[340px] flex flex-col"
     >
       {/* Image Section - Fixed Height with LazyImage */}
       <div className="bg-gray-200 p-2 sm:p-3 border-b border-slate-300 flex-shrink-0 relative">
@@ -63,7 +64,7 @@ export default function ProductCard({ product }) {
           <LazyImage
             src={product.image || product.img}
             alt={product.name}
-            className="w-24 h-24 sm:w-32 sm:h-32 object-contain"
+            className="w-20 h-20 sm:w-28 sm:h-28 object-contain"
             containerClassName="w-24 h-24 sm:w-32 sm:h-32"
           />
         </div>
@@ -72,15 +73,15 @@ export default function ProductCard({ product }) {
       {/* Content Section - Flexible with flex-1 */}
       <div className="flex-1 py-3 px-4 flex flex-col">
         {/* Product Name - Fixed Height with line-clamp */}
-        <h4 className="text-[11px] sm:text-sm font-semibold line-clamp-2 mb-2 min-h-[22px] sm:min-h-[40px]">
+        <h4 className="text-[11px] sm:text-sm font-semibold line-clamp-2 mb-2 min-h-[15 px] sm:min-h-[25px]">
           {product.name}
         </h4>
 
         {/* Price Section */}
         <div className="py-2 text-[11px] sm:text-sm border-b border-slate-300 mb-2">
-          <span className="font-semibold">{product.price}</span>{" "}
-          {product.cut && (
-            <span className="line-through text-slate-400">{product.cut}</span>
+          <span className="font-semibold">{product.currency}{product.price}</span>{" "}
+          {product.currency && product.cut && (
+            <span className="line-through text-slate-400">{product.currency}{product.cut}</span>
           )}
         </div>
 
@@ -89,9 +90,9 @@ export default function ProductCard({ product }) {
 
         {/* Save Text and Button/Controls - Always at bottom */}
         <div className="flex flex-col xl:flex-row items-stretch xl:items-center justify-end gap-2 ">
-          {product.save && (
+          {product.currency && product.save && (
             <span className="text-[10px] sm:text-[13px] text-emerald-600 xl:mr-auto text-center xl:text-left">
-              Save - {product.save}
+              Save - {product.currency}{product.save}
             </span>
           )}
         

@@ -87,20 +87,6 @@ export default function ProductDetailsPage() {
 
   return (
     <div className="min-h-screen bg-gray-50">
-      {/* Top Navbar */}
-      {/* <div className="bg-white px-4 sm:px-6 py-3 border-b border-slate-100">
-        <div className="max-w-[95%] mx-auto flex items-center justify-between gap-4">
-          <div className="flex items-center gap-2">
-            <Link to="/" className="flex items-center gap-2">
-              <ListFilter className="w-10 h-7 text-blue-500" />
-              <div className="text-lg sm:text-xl font-extrabold text-blue-600">
-                MegaMart
-              </div>
-            </Link>
-          </div>
-          <CartIcon />
-        </div>
-      </div>*/}
       <Header showBanner={false} showSearchBar={false} showCart={true}/>
 
       {/* Content */}
@@ -130,14 +116,14 @@ export default function ProductDetailsPage() {
             <div className="text-sm text-gray-600">
               <p>
                 <span className="font-semibold">Brand:</span>{" "}
-                {product.brand || "Generic"}
+                {product?.specification?.brand || "Generic"}
               </p>
               <p>
-                <span className="font-semibold">Model:</span>{" "}
-                {product.model || product.id}
+                <span className="font-semibold">Category:</span>{" "}
+                {product?.subCategory?.name}
               </p>
               <p className="text-green-600 font-medium">
-                Availability: {product.availability || "In Stock"}
+                Availability: {product.stock > 0 ? "In Stock" : "Out of Stock"}
               </p>
             </div>
 
@@ -192,14 +178,13 @@ export default function ProductDetailsPage() {
 
             {/* Price Section */}
             <div className="border-t border-b py-4">
-              <p className="text-sm text-gray-600 mb-1">USD (Incl. of all taxes):</p>
               <div className="flex items-center gap-3">
                 <span className="text-3xl font-bold text-gray-900">
-                  {product.price}
+                  {product.currency} {product.price}
                 </span>
                 {product.cut && (
                   <span className="text-xl text-gray-400 line-through">
-                    {product.cut}
+                    {product.currency} {product.cut}
                   </span>
                 )}
               </div>
@@ -303,11 +288,13 @@ export default function ProductDetailsPage() {
             {activeTab === "description" && (
               <div className="text-gray-700 space-y-4">
                 <p>
-                  {product.description ||
-                    `This ${product.name} is one of the best products in its category. It offers exceptional quality and value for money.`}
+                  {product.description}.
+                    
+                  {` This ${product.name} is one of the best products in its category. It offers exceptional quality and value for money.`}
+
                 </p>
-                {product.additionalInfo && (
-                  <p className="text-sm text-gray-600">{product.additionalInfo}</p>
+                {product.subCategory?.description && (
+                  <p className="text-sm text-gray-600">{product.subCategory?.description}</p>
                 )}
               </div>
             )}
@@ -315,22 +302,32 @@ export default function ProductDetailsPage() {
               <div className="text-gray-700">
                 <table className="w-full text-sm">
                   <tbody>
-                    <tr className="border-b">
-                      <td className="py-3 font-semibold w-1/3">Brand</td>
-                      <td className="py-3">{product.brand || "Generic"}</td>
-                    </tr>
-                    <tr className="border-b">
-                      <td className="py-3 font-semibold">Model</td>
-                      <td className="py-3">{product.model || product.id}</td>
-                    </tr>
-                    <tr className="border-b">
-                      <td className="py-3 font-semibold">Category</td>
-                      <td className="py-3">{product.category || "N/A"}</td>
-                    </tr>
+                    {product.specification && typeof product.specification === 'object' ? (
+                      Object.entries(product.specification).map(([key, value]) => {
+                        // Skip if the value is an object or array to prevent the error
+                        if (typeof value === 'object' && value !== null) {
+                          return null;
+                        }
+                        return (
+                          <tr key={key} className="border-b">
+                            <td className="py-3 font-semibold capitalize">
+                              {key.replace(/([A-Z])/g, ' $1').replace(/^./, str => str.toUpperCase())}
+                            </td>
+                            <td className="py-3">{String(value)}</td>
+                          </tr>
+                        );
+                      })
+                    ) : (
+                      <tr>
+                        <td colSpan="2" className="py-3 text-center text-gray-500">
+                          No specifications available
+                        </td>
+                      </tr>
+                    )}
                   </tbody>
                 </table>
               </div>
-            )}
+)}
             {activeTab === "reviews" && (
               <div className="text-gray-700 text-center py-8">
                 <p className="text-gray-500">

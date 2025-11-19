@@ -53,22 +53,21 @@ function ProductTabs({ product }) {
           <div className="text-gray-700">
             <table className="w-full text-sm">
               <tbody>
-                <tr className="border-b">
-                  <td className="py-3 font-semibold">Brand</td>
-                  <td className="py-3">{product.brand || "LG"}</td>
-                </tr>
-                <tr className="border-b">
-                  <td className="py-3 font-semibold">Model</td>
-                  <td className="py-3">{product.model || product.id}</td>
-                </tr>
-                <tr className="border-b">
-                  <td className="py-3 font-semibold">Screen Size</td>
-                  <td className="py-3">{product.screenSize || "42 inches"}</td>
-                </tr>
-                <tr className="border-b">
-                  <td className="py-3 font-semibold">Resolution</td>
-                  <td className="py-3">{product.resolution || "4K UHD"}</td>
-                </tr>
+                {Object.entries(product.specification || {}).map(([key, value]) => (
+                  <tr key={key} className="border-b">
+                    <td className="py-3 font-semibold capitalize">
+                      {key.replace(/([A-Z])/g, ' $1').replace(/^./, str => str.toUpperCase())}
+                    </td>
+                    <td className="py-3">{value || 'N/A'}</td>
+                  </tr>
+                ))}
+                {!product.specification && (
+                  <tr>
+                    <td colSpan="2" className="py-3 text-center text-gray-500">
+                      No specifications available
+                    </td>
+                  </tr>
+                )}
               </tbody>
             </table>
           </div>

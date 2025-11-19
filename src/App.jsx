@@ -14,14 +14,6 @@ import ProfilePage from "./pages/ProfilePage";
 import ResetPasswordPage from "./pages/ResetPasswordPage";
 import OrderManagementPage from "./pages/OrderPage";
 
-import AdminLayout from "./admin/AdminLayout";
-import Dashboard from "./admin/Dashboard";
-import Users from "./admin/Users";
-import Products from "./admin/Products";
-import Orders from "./admin/Orders";
-import AdminLogin from "./pages/AdminLogin";
-import AdminRegister from "./pages/AdminRegister";
-
 
 export default function App() {
   return (
@@ -40,15 +32,6 @@ export default function App() {
             <Route path="/profile/*" element={<ProfilePage />} />
             <Route path="/reset" element={<ResetPasswordPage />} />
             <Route path="/orders" element={<OrderManagementPage />} />
-            <Route path="/adminlogin" element={<AdminLogin />} />
-            <Route path="/adminregister" element={<AdminRegister />} />
-            {/* Admin link */}
-            <Route path="/admin" element={<AdminLayout />}>
-              <Route index element={<Dashboard />} />
-              <Route path="products" element={<Products />} />
-              <Route path="orders" element={<Orders />} />
-              <Route path="users" element={<Users />} />
-            </Route>
           </Routes>
         </Router>
       </CartProvider>

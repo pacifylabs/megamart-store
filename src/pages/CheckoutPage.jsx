@@ -4,6 +4,7 @@ import { useNavigate } from "react-router-dom";
 import Header from "../components/Header";
 import { appConfig } from "../config/appConfig";
 import { useCart } from "../context/CartContext";
+import { CURRENCY_SIGN } from "../utils/api-axios";
 
 export default function CheckoutPage() {
   const navigate = useNavigate();
@@ -18,6 +19,7 @@ export default function CheckoutPage() {
     state: "",
     country: "Nigeria",
   });
+  const currency = CURRENCY_SIGN || '';
 
   useEffect(() => {
     if (!cartItems || cartItems.length === 0) {
@@ -32,77 +34,13 @@ export default function CheckoutPage() {
     });
   };
 
-  // Commented out payment gateway functions
-  /*
-  const handlePaystackPayment = () => {
-    const handler = window.PaystackPop.setup({
-      key: appConfig.PAYSTACK_PUBLIC_KEY,
-      email: formData.email,
-      amount: cartTotal * 100,
-      currency: 'NGN',
-      ref: 'MM_' + Math.floor((Math.random() * 1000000000) + 1),
-      metadata: {
-        custom_fields: [
-          {
-            display_name: "Full Name",
-            variable_name: "full_name",
-            value: formData.fullName
-          },
-          {
-            display_name: "Phone Number",
-            variable_name: "phone_number",
-            value: formData.phone
-          }
-        ]
-      },
-      callback: function (response) {
-        alert('Payment successful! Reference: ' + response.reference);
-        clearCart();
-        navigate('/');
-      },
-      onClose: function () {
-        alert('Payment window closed.');
-      }
-    });
-    handler.openIframe();
-  };
-
-  const handleFlutterwavePayment = () => {
-    window.FlutterwaveCheckout({
-      public_key: appConfig.FLUTTER_PUBLIC_KEY,
-      tx_ref: "MM_" + Date.now(),
-      amount: cartTotal,
-      currency: "NGN",
-      payment_options: "card,mobilemoney,ussd",
-      customer: {
-        email: formData.email,
-        phone_number: formData.phone,
-        name: formData.fullName,
-      },
-      customizations: {
-        title: "MegaMart",
-        description: "Payment for products",
-        logo: "https://your-logo-url.com/logo.png",
-      },
-      callback: function (data) {
-        if (data.status === "successful") {
-          alert("Payment successful! Transaction ID: " + data.transaction_id);
-          clearCart();
-          navigate('/');
-        }
-      },
-      onclose: function () {
-        alert("Payment window closed.");
-      },
-    });
-  };
-  */
-
   const handlePlaceOrder = (e) => {
     e.preventDefault();
 
-    if (!formData.fullName || !formData.email || !formData.phone || !formData.address) {
-      alert("Please fill in all required fields");
+    if (!validateAddress()) return;
+    
+    if (!formData.email) {
+      alert("Please enter your email address");
       return;
     }
 
@@ -123,19 +61,29 @@ export default function CheckoutPage() {
     localStorage.setItem('orders', JSON.stringify(existingOrders));
 
     // Show success message
-    alert(`Order placed successfully! Order ID: ${order.id}\n\nYou will pay ₦${cartTotal} on delivery.`);
+    alert(`Order placed successfully! Order ID: ${order.id}\n\nYou will pay ${currency}${cartTotal} on delivery.`);
     
     // Clear cart and redirect
     clearCart();
     navigate('/orders');
   };
 
+  const validateAddress = () => {
+    if (!formData.fullName || !formData.phone || !formData.address) {
+      alert("Please fill in all required address fields (Name, Phone, and Address) before proceeding.");
+      return false;
+    }
+    return true;
+  };
+
   const handleChatSeller = () => {
+    if (!validateAddress()) return;
+    
     const itemsList = cartItems.map(item =>
-      `- ${item.name} (Qty: ${item.qty}) - ₦${item.price}`
+      `- ${item.name} (Qty: ${item.qty}) - ${currency}${item.price}`
     ).join('\n');
 
-    const message = `Hi, I want to place an order:\n\n${itemsList}\n\nTotal: ₦${cartTotal}\n\nDelivery Address:\n${formData.address}, ${formData.city}, ${formData.state}`;
+    const message = `Hi, I want to place an order:\n\n${itemsList}\n\nTotal: ${currency}${cartTotal}\n\nDelivery Address:\n${formData.fullName}\n${formData.phone}\n${formData.address}${formData.city ? ', ' + formData.city : ''}${formData.state ? ', ' + formData.state : ''}`;
     const whatsappNumber = appConfig.STORE_ORDER_CONTACT;
     const whatsappUrl = `https://wa.me/${whatsappNumber}?text=${encodeURIComponent(message)}`;
     window.open(whatsappUrl, "_blank");
@@ -179,16 +127,16 @@ export default function CheckoutPage() {
                       )}
                       <p className="text-sm text-gray-600">Quantity: {item.qty}</p>
                       <p className="font-semibold text-blue-600">
-                        ₦{item.price} × {item.qty} = ₦{item.price * item.qty}
+                        {currency}{item.price} × {item.qty} = {currency}{item.price * item.qty}
                       </p>
                     </div>
                   </div>
                 ))}
               </div>
-              <div className="mt-4 pt-4 border-t">
+              <div className="mt-4 pt-4">
                 <div className="flex justify-between text-xl font-bold">
                   <span>Total:</span>
-                  <span className="text-blue-600">₦{cartTotal}</span>
+                  <span className="text-blue-600">{currency || ''}{cartTotal}</span>
                 </div>
               </div>
             </div>
@@ -316,66 +264,14 @@ export default function CheckoutPage() {
                   </div>
                 </label>
 
-                {/* Commented out payment gateway options */}
-                {/*
-                <label className="flex items-center gap-3 p-3 border-2 rounded-lg cursor-pointer hover:bg-gray-50 transition opacity-50">
-                  <input
-                    type="radio"
-                    name="payment"
-                    value="paystack"
-                    checked={paymentMethod === "paystack"}
-                    onChange={(e) => setPaymentMethod(e.target.value)}
-                    className="w-4 h-4"
-                    disabled
-                  />
-                  <div className="flex-1">
-                    <div className="font-semibold">Paystack</div>
-                    <div className="text-xs text-gray-600">Pay with card, bank transfer</div>
-                  </div>
-                  <div className="w-20 h-6 bg-gray-200 rounded flex items-center justify-center text-xs font-bold text-gray-700">
-                    PAYSTACK
-                  </div>
-                </label>
+                <button
+                  type="submit"
+                  className="w-full bg-blue-600 text-white py-3 rounded-lg font-semibold hover:bg-blue-700 transition mb-3"
+                >
+                  Place Order - Pay {cartItems[0]?.currency || ''}{cartTotal} on Delivery
+                </button>
 
-                <label className="flex items-center gap-3 p-3 border-2 rounded-lg cursor-pointer hover:bg-gray-50 transition opacity-50">
-                  <input
-                    type="radio"
-                    name="payment"
-                    value="flutterwave"
-                    checked={paymentMethod === "flutterwave"}
-                    onChange={(e) => setPaymentMethod(e.target.value)}
-                    className="w-4 h-4"
-                    disabled
-                  />
-                  <div className="flex-1">
-                    <div className="font-semibold">Flutterwave</div>
-                    <div className="text-xs text-gray-600">Multiple payment options</div>
-                  </div>
-                  <div className="w-20 h-6 bg-orange-500 rounded flex items-center justify-center text-xs font-bold text-white">
-                    FLW
-                  </div>
-                </label>
-                */}
-              </div>
-
-              <button
-                onClick={handlePlaceOrder}
-                className="w-full bg-blue-600 text-white py-3 rounded-lg font-semibold hover:bg-blue-700 transition mb-3"
-              >
-                Place Order - Pay ₦{cartTotal} on Delivery
-              </button>
-
-              {/* Commented out payment button */}
-              {/*
-              <button
-                onClick={handlePayment}
-                className="w-full bg-blue-600 text-white py-3 rounded-lg font-semibold hover:bg-blue-700 transition mb-3"
-              >
-                Pay ₦{cartTotal}
-              </button>
-              */}
-
-              <div className="relative my-4">
+                <div className="relative my-4">
                 <div className="absolute inset-0 flex items-center">
                   <div className="w-full border-t border-gray-300"></div>
                 </div>
@@ -401,6 +297,7 @@ export default function CheckoutPage() {
           </div>
         </div>
       </div>
+    </div>
     </div>
   );
 }

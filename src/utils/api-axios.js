@@ -1,9 +1,10 @@
 // src/api.js
 import axios from "axios";
 
-const API_URL = "https://megamart-backend-oc0q.onrender.com/api"; 
+// const API_URL = "https://megamart-backend-oc0q.onrender.com/api"; 
+export const API_URL = "http://localhost:3000/"; 
 const API = axios.create({
-  baseURL: "https://megamart-backend-oc0q.onrender.com/api",
+  baseURL: `${API_URL}`,
 });
 
 // Add request interceptor to attach access token
@@ -52,3 +53,4 @@ API.interceptors.response.use(
 );
 
 export default API;
+export const CURRENCY_SIGN = "₹";

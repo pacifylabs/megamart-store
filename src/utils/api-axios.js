@@ -2,7 +2,7 @@
 import axios from "axios";
 
 // const API_URL = "https://megamart-backend-oc0q.onrender.com/api"; 
-export const API_URL = "http://localhost:3000/"; 
+export const API_URL = "http://localhost:3000"; 
 const API = axios.create({
   baseURL: `${API_URL}`,
 });

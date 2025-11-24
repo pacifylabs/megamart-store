@@ -150,7 +150,7 @@ export default function ListingPage() {
           price: (product.price - product.discount).toFixed(2),
           img: product.img || " ",
           discount: product.discount,
-          percentage: product.percentage,
+          percentage: product.percentage || 0,
           save: product.discount,
           cut: product.price,
           currency,

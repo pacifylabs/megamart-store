@@ -52,20 +52,20 @@ export default function ProductCard({ product }) {
       className="bg-white rounded-lg border border-[#e6eef2] relative flex-shrink-0 w-[160px] sm:w-auto overflow-hidden cursor-pointer hover:shadow-lg transition-shadow h-[290px] sm:h-[340px] flex flex-col"
     >
       {/* Image Section - Fixed Height with LazyImage */}
-      <div className="bg-gray-200 p-2 sm:p-3 border-b border-slate-300 flex-shrink-0 relative">
-        {product.discount && (
-          <div className="absolute -top-1 -right-1 bg-blue-600 text-white text-xs px-2 py-2 rounded z-10">
-            <span>{product.percentage || "50"}%</span><br />
-            <span>OFF</span>
+      <div className="bg-gray-200 border-b border-slate-300 flex-shrink-0 relative h-32 sm:h-40 flex items-center justify-center p-2">
+        {product.discount > 0 && product.percentage > 0 && (
+          <div className="absolute -top-1 -right-1 bg-blue-600 text-white text-xs px-2 py-1.5 rounded z-10 text-center">
+            <span className="font-semibold">{product.percentage}%</span><br />
+            <span className="text-[10px]">OFF</span>
           </div>
         )}
         
-        <div className="flex justify-center items-center h-24 sm:h-32">
+        <div className="relative w-24 h-24 sm:w-32 sm:h-32">
           <LazyImage
             src={product.image || product.img}
             alt={product.name}
-            className="w-20 h-20 sm:w-28 sm:h-28 object-contain"
-            containerClassName="w-24 h-24 sm:w-32 sm:h-32"
+            className="w-full h-full object-contain"
+            containerClassName="w-full h-full absolute inset-0 flex items-center justify-center"
           />
         </div>
       </div>
@@ -88,14 +88,22 @@ export default function ProductCard({ product }) {
         {/* Spacer - Takes up remaining space */}
         <div className="flex-1"></div>
 
-        {/* Save Text and Button/Controls - Always at bottom */}
-        <div className="flex flex-col xl:flex-row items-stretch xl:items-center justify-end gap-2 ">
-          {product.currency && product.save && (
-            <span className="text-[10px] sm:text-[13px] text-emerald-600 xl:mr-auto text-center xl:text-left">
-              Save - {product.currency}{product.save}
-            </span>
-          )}
-        
+        {/* Save and Cart Controls - Stacked Layout */}
+        <div className="flex flex-col gap-1">
+          {/* Save Text - Always shown with fallback */}
+          <div className="text-center">
+            {product.currency && product.save ? (
+              <span className="text-[10px] sm:text-[13px] text-emerald-600 font-medium">
+                Save - {product.currency}{product.save}
+              </span>
+            ) : (
+              <span className="text-[10px] sm:text-[13px] text-gray-500">
+                {product.inStock !== false ? 'In Stock' : 'Check Availability'}
+              </span>
+            )}
+          </div>
+
+          {/* Cart Button */}
           {!inCart ? (
             <button
               onClick={handleAddToCart}
@@ -104,20 +112,20 @@ export default function ProductCard({ product }) {
               Add to Cart
             </button>
           ) : (
-            <div className="flex items-center justify-center gap-1 rounded overflow-hidden">
+            <div className="grid grid-cols-3 w-full gap-0.5">
               <button
                 onClick={handleDecrement}
-                className="p-2 text-white hover:bg-red-600 bg-red-500 transition outline-0 rounded-[5px 0 0 5px]"
+                className="p-2 text-white hover:bg-red-600 bg-red-500 transition outline-0 flex items-center justify-center rounded-l"
                 aria-label="Decrease quantity"
               >
                 <Minus className="w-3 h-3 sm:w-4 sm:h-4" />
               </button>
-              <span className="px-2 sm:px-2 bg-white text-blue-600 font-semibold text-[12px] sm:text-sm min-w-[22px] sm:min-w-[30px] text-center">
+              <div className="bg-white text-blue-600 font-semibold text-[12px] sm:text-sm flex items-center justify-center">
                 {quantity}
-              </span>
+              </div>
               <button
                 onClick={handleIncrement}
-                className="p-2 bg-blue-500 text-white hover:bg-blue-600 transition outline-0"
+                className="p-2 bg-blue-500 text-white hover:bg-blue-600 transition outline-0 flex items-center justify-center rounded-r"
                 aria-label="Increase quantity"
               >
                 <Plus className="w-3 h-3 sm:w-4 sm:h-4" />

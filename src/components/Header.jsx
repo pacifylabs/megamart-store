@@ -448,8 +448,14 @@ export default function Header({
               <div className="relative">
                 <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400 w-4 h-4" />
                 <input
-                  value={showSortFilter ? searchQuery : ""}
-                  onChange={showSortFilter ? handleSearchChange : undefined}
+                  {...(showSortFilter 
+                    ? {
+                        value: searchQuery,
+                        onChange: handleSearchChange
+                      } 
+                    : {
+                        defaultValue: ""
+                      })}
                   className="w-full rounded-lg border border-[#e6eef2] bg-white px-10 py-2 text-sm"
                   placeholder={showSortFilter ? "Search products..." : "Search..."}
                 />

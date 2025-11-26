@@ -15,8 +15,7 @@
       "dest": "/dist/$1"
     }
   ],
-  "buildCommand": "pnpm run build",
+  "buildCommand": "pnpm build",
   "outputDirectory": "dist",
-  "installCommand": "pnpm install",
-  "devCommand": "pnpm run dev"
+  "installCommand": "pnpm install"
 }

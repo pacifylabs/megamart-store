@@ -1,5 +1,6 @@
 import { createContext, useContext, useEffect, useState } from "react";
 import { login as loginService, refreshToken, signup } from "../services/authServices";
+import { userService } from "../services/api/userService";
 
 export const AuthContext = createContext();
 
@@ -22,9 +23,7 @@ export const AuthProvider = ({ children }) => {
           setUser(userData);
           setAccessToken(storedAccessToken);
           setRefreshTk(storedRefreshToken);
-          console.log("Auth initialized from localStorage:", userData);
         } catch (error) {
-          console.error("Error parsing stored auth data:", error);
           localStorage.removeItem("user");
           localStorage.removeItem("accessToken");
           localStorage.removeItem("refreshToken");
@@ -58,10 +57,10 @@ export const AuthProvider = ({ children }) => {
       localStorage.setItem("refreshToken", refreshToken);
       localStorage.setItem("user", JSON.stringify(user));
       
-      console.log("Login successful - user set in context:", user);
+      
       return res.data;
     } catch (error) {
-      console.error("Login error in AuthContext:", error);
+      
       throw error;
     }
   };
@@ -82,7 +81,7 @@ export const AuthProvider = ({ children }) => {
 
   // Logout
   const handleLogout = () => {
-    console.log("Logging out user");
+    
     setUser(null);
     setAccessToken(null);
     setRefreshTk(null);
@@ -91,12 +90,54 @@ export const AuthProvider = ({ children }) => {
     localStorage.removeItem("user");
   };
 
+  // Update user information
+  const updateUser = async (userData) => {
+    try {
+      if (!user) {
+        throw new Error('No authenticated user found');
+      }
+
+      // Whitelist only mutable profile fields expected by the backend
+      const allowedUpdateData = {
+        firstName: userData.firstName ?? null,
+        lastName: userData.lastName ?? null,
+        phone: userData.phone ?? null,
+        dateOfBirth: userData.dateOfBirth ?? null,
+        gender: userData.gender ?? null,
+        address: userData.address ?? null,
+        city: userData.city ?? null,
+        country: userData.country ?? null,
+        postalCode: userData.postalCode ?? null,
+        profileImageUrl: userData.profileImageUrl ?? null,
+      };
+
+      const response = await userService.updateProfile(allowedUpdateData);
+      const updatedUser = response.data;
+      
+      if (!updatedUser) {
+        throw new Error('Failed to update user: No data returned from server');
+      }
+
+      // Update state
+      setUser(updatedUser);
+      
+      // Update localStorage
+      localStorage.setItem('user', JSON.stringify(updatedUser));
+      
+      
+      return updatedUser;
+    } catch (error) {
+      throw error;
+    }
+  };
+
   const value = {
     user,
     accessToken,
     isInitialized,
     handleSignup,
     handleLogin,
+    updateUser, // Add the updateUser function
     login: handleLogin, // Alias for compatibility
     handleLogout,
     handleRefresh

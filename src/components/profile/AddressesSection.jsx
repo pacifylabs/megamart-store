@@ -1,139 +1,52 @@
-// src/components/profile/AddressesSection.jsx
+// components/profile/AddressesSection.jsx
 import React, { useState, useEffect } from "react";
-import { Plus, Edit, Trash2, MapPin, Loader } from "lucide-react";
+import { Plus, Edit, Trash2, MapPin, Loader, Check } from "lucide-react";
 import { Link } from "react-router-dom";
 
 /**
- * Delivery addresses with full CRUD operations
+ * Addresses Section - Updated with better UI and API integration
+ * API Endpoints:
+ * - GET /user/addresses
+ * - POST /user/addresses
+ * - PATCH /user/addresses/:id
+ * - DELETE /user/addresses/:id
  */
 
-// API service functions with proper error handling
-const addressAPI = {
-  // Fetch addresses from API
-  getAddresses: async () => {
-    try {
-      const response = await fetch('/api/user/addresses', {
-        headers: {
-          'Content-Type': 'application/json',
-          'Authorization': `Bearer ${localStorage.getItem('token')}`
-        },
-      });
-      
-      if (!response.ok) {
-        throw new Error(`HTTP error! status: ${response.status}`);
-      }
-      
-      const contentType = response.headers.get('content-type');
-      if (!contentType || !contentType.includes('application/json')) {
-        throw new Error('Server returned non-JSON response');
-      }
-      
-      return await response.json();
-    } catch (error) {
-      console.error('API Error in getAddresses:', error);
-      throw error;
-    }
-  },
-
-  // Update address using PATCH
-  updateAddress: async (addressId, updates) => {
-    try {
-      const response = await fetch(`/api/user/addresses/${addressId}`, {
-        method: 'PATCH',
-        headers: {
-          'Content-Type': 'application/json',
-          'Authorization': `Bearer ${localStorage.getItem('token')}`
-        },
-        body: JSON.stringify(updates),
-      });
-      
-      if (!response.ok) {
-        throw new Error(`HTTP error! status: ${response.status}`);
-      }
-      
-      return await response.json();
-    } catch (error) {
-      console.error('API Error in updateAddress:', error);
-      throw error;
-    }
-  },
-
-  // Delete address
-  deleteAddress: async (addressId) => {
-    try {
-      const response = await fetch(`/api/user/addresses/${addressId}`, {
-        method: 'DELETE',
-        headers: {
-          'Authorization': `Bearer ${localStorage.getItem('token')}`
-        },
-      });
-      
-      if (!response.ok) {
-        throw new Error(`HTTP error! status: ${response.status}`);
-      }
-      
-      return await response.json();
-    } catch (error) {
-      console.error('API Error in deleteAddress:', error);
-      throw error;
-    }
-  },
-
-  // Add new address
-  addAddress: async (addressData) => {
-    try {
-      const response = await fetch('/api/user/addresses', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-          'Authorization': `Bearer ${localStorage.getItem('token')}`
-        },
-        body: JSON.stringify(addressData),
-      });
-      
-      if (!response.ok) {
-        throw new Error(`HTTP error! status: ${response.status}`);
-      }
-      
-      return await response.json();
-    } catch (error) {
-      console.error('API Error in addAddress:', error);
-      throw error;
-    }
-  }
-};
-
-// Mock data for development
+// Mock data - Replace with API call
 const mockAddresses = [
   { 
     id: 1, 
     label: "Home", 
-    line: "23, Park Lane, Lagos", 
-    phone: "+2348123456789", 
+    line: "123 Park Street, Apartment 4B", 
+    city: "Mumbai",
+    state: "Maharashtra",
+    country: "India",
+    postalCode: "400001",
+    phone: "+91 98765 43210", 
     isDefault: true 
   },
   { 
     id: 2, 
     label: "Office", 
-    line: "Block B, Business Park", 
-    phone: "+2348098765432", 
+    line: "Tech Park, Floor 8, Sector 5", 
+    city: "Bangalore",
+    state: "Karnataka", 
+    country: "India",
+    postalCode: "560001",
+    phone: "+91 87654 32109", 
     isDefault: false 
   },
 ];
 
-// Status color mapping
-const statusColors = {
-  Delivered: "text-green-600 dark:text-green-400",
-  Shipped: "text-blue-600 dark:text-blue-400",
-  Processing: "text-yellow-600 dark:text-yellow-400",
-  Cancelled: "text-red-600 dark:text-red-400",
-};
-
-// Address form component
+// Address Form Component
 const AddressForm = ({ address, onSave, onCancel, isEditing }) => {
   const [formData, setFormData] = useState({
     label: address?.label || '',
     line: address?.line || '',
+    city: address?.city || '',
+    state: address?.state || '',
+    country: address?.country || '',
+    postalCode: address?.postalCode || '',
     phone: address?.phone || '',
     isDefault: address?.isDefault || false
   });
@@ -153,50 +66,116 @@ const AddressForm = ({ address, onSave, onCancel, isEditing }) => {
   };
 
   return (
-    <form onSubmit={handleSubmit} className="bg-gray-50 dark:bg-slate-700 p-4 rounded-lg space-y-3">
-      <div>
-        <label className="block text-sm font-medium text-gray-700 dark:text-slate-300 mb-1">
-          Address Label *
-        </label>
-        <input
-          type="text"
-          value={formData.label}
-          onChange={(e) => setFormData({ ...formData, label: e.target.value })}
-          className="w-full px-3 py-2 border border-gray-300 dark:border-slate-600 rounded-md text-sm bg-white dark:bg-slate-800 text-gray-900 dark:text-slate-100"
-          placeholder="Home, Office, etc."
-          required
-          disabled={loading}
-        />
-      </div>
+    <form onSubmit={handleSubmit} className="bg-blue-50 border border-blue-200 rounded-xl p-6 space-y-4">
+      <h4 className="font-semibold text-gray-900">
+        {isEditing ? 'Edit Address' : 'Add New Address'}
+      </h4>
+      
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+        <div>
+          <label className="block text-sm font-medium text-gray-700 mb-1">
+            Address Label *
+          </label>
+          <input
+            type="text"
+            value={formData.label}
+            onChange={(e) => setFormData({ ...formData, label: e.target.value })}
+            className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm bg-white text-gray-900 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+            placeholder="Home, Office, etc."
+            required
+            disabled={loading}
+          />
+        </div>
 
-      <div>
-        <label className="block text-sm font-medium text-gray-700 dark:text-slate-300 mb-1">
-          Address *
-        </label>
-        <textarea
-          value={formData.line}
-          onChange={(e) => setFormData({ ...formData, line: e.target.value })}
-          className="w-full px-3 py-2 border border-gray-300 dark:border-slate-600 rounded-md text-sm bg-white dark:bg-slate-800 text-gray-900 dark:text-slate-100"
-          rows="3"
-          placeholder="Full delivery address"
-          required
-          disabled={loading}
-        />
-      </div>
+        <div>
+          <label className="block text-sm font-medium text-gray-700 mb-1">
+            Phone Number *
+          </label>
+          <input
+            type="tel"
+            value={formData.phone}
+            onChange={(e) => setFormData({ ...formData, phone: e.target.value })}
+            className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm bg-white text-gray-900 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+            placeholder="+91 98765 43210"
+            required
+            disabled={loading}
+          />
+        </div>
 
-      <div>
-        <label className="block text-sm font-medium text-gray-700 dark:text-slate-300 mb-1">
-          Phone Number *
-        </label>
-        <input
-          type="tel"
-          value={formData.phone}
-          onChange={(e) => setFormData({ ...formData, phone: e.target.value })}
-          className="w-full px-3 py-2 border border-gray-300 dark:border-slate-600 rounded-md text-sm bg-white dark:bg-slate-800 text-gray-900 dark:text-slate-100"
-          placeholder="+2348123456789"
-          required
-          disabled={loading}
-        />
+        <div className="md:col-span-2">
+          <label className="block text-sm font-medium text-gray-700 mb-1">
+            Address Line *
+          </label>
+          <textarea
+            value={formData.line}
+            onChange={(e) => setFormData({ ...formData, line: e.target.value })}
+            className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm bg-white text-gray-900 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent resize-none"
+            rows="2"
+            placeholder="Full street address"
+            required
+            disabled={loading}
+          />
+        </div>
+
+        <div>
+          <label className="block text-sm font-medium text-gray-700 mb-1">
+            City *
+          </label>
+          <input
+            type="text"
+            value={formData.city}
+            onChange={(e) => setFormData({ ...formData, city: e.target.value })}
+            className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm bg-white text-gray-900 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+            placeholder="City"
+            required
+            disabled={loading}
+          />
+        </div>
+
+        <div>
+          <label className="block text-sm font-medium text-gray-700 mb-1">
+            State *
+          </label>
+          <input
+            type="text"
+            value={formData.state}
+            onChange={(e) => setFormData({ ...formData, state: e.target.value })}
+            className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm bg-white text-gray-900 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+            placeholder="State"
+            required
+            disabled={loading}
+          />
+        </div>
+
+        <div>
+          <label className="block text-sm font-medium text-gray-700 mb-1">
+            Postal Code *
+          </label>
+          <input
+            type="text"
+            value={formData.postalCode}
+            onChange={(e) => setFormData({ ...formData, postalCode: e.target.value })}
+            className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm bg-white text-gray-900 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+            placeholder="PIN code"
+            required
+            disabled={loading}
+          />
+        </div>
+
+        <div>
+          <label className="block text-sm font-medium text-gray-700 mb-1">
+            Country *
+          </label>
+          <input
+            type="text"
+            value={formData.country}
+            onChange={(e) => setFormData({ ...formData, country: e.target.value })}
+            className="w-full px-3 py-2 border border-gray-300 rounded-lg text-sm bg-white text-gray-900 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+            placeholder="Country"
+            required
+            disabled={loading}
+          />
+        </div>
       </div>
 
       <div className="flex items-center">
@@ -205,19 +184,19 @@ const AddressForm = ({ address, onSave, onCancel, isEditing }) => {
           id="isDefault"
           checked={formData.isDefault}
           onChange={(e) => setFormData({ ...formData, isDefault: e.target.checked })}
-          className="w-4 h-4 text-blue-600 bg-gray-100 border-gray-300 rounded focus:ring-blue-500 dark:focus:ring-blue-600 dark:ring-offset-gray-800 focus:ring-2 dark:bg-gray-700 dark:border-gray-600"
+          className="w-4 h-4 text-blue-600 bg-white border-gray-300 rounded focus:ring-blue-500 focus:ring-2"
           disabled={loading}
         />
-        <label htmlFor="isDefault" className="ml-2 text-sm text-gray-700 dark:text-slate-300">
+        <label htmlFor="isDefault" className="ml-2 text-sm text-gray-700">
           Set as default address
         </label>
       </div>
 
-      <div className="flex gap-2 pt-2">
+      <div className="flex gap-3 pt-2">
         <button
           type="submit"
           disabled={loading}
-          className="flex items-center gap-2 px-4 py-2 bg-blue-600 text-white text-sm font-medium rounded-md hover:bg-blue-700 disabled:bg-blue-400 disabled:cursor-not-allowed transition-colors"
+          className="flex items-center gap-2 px-6 py-2 bg-blue-600 text-white text-sm font-medium rounded-lg hover:bg-blue-700 disabled:bg-blue-400 disabled:cursor-not-allowed transition-colors"
         >
           {loading && <Loader className="w-4 h-4 animate-spin" />}
           {isEditing ? 'Update Address' : 'Add Address'}
@@ -226,7 +205,7 @@ const AddressForm = ({ address, onSave, onCancel, isEditing }) => {
           type="button"
           onClick={onCancel}
           disabled={loading}
-          className="px-4 py-2 border border-gray-300 dark:border-slate-600 text-gray-700 dark:text-slate-300 text-sm font-medium rounded-md hover:bg-gray-50 dark:hover:bg-slate-600 disabled:opacity-50 transition-colors"
+          className="px-6 py-2 border border-gray-300 text-gray-700 text-sm font-medium rounded-lg hover:bg-gray-50 disabled:opacity-50 transition-colors"
         >
           Cancel
         </button>
@@ -235,34 +214,40 @@ const AddressForm = ({ address, onSave, onCancel, isEditing }) => {
   );
 };
 
-// Address item component
+// Address Item Component
 const AddressItem = ({ address, onEdit, onDelete, onSetDefault, loading }) => (
-  <li className="flex items-start justify-between p-4 border border-gray-200 dark:border-slate-600 rounded-lg">
+  <div className="flex flex-col md:flex-row md:items-start justify-between p-6 border border-gray-200 rounded-xl hover:border-gray-300 transition-colors">
     <div className="flex-1">
-      <div className="flex items-center gap-2 mb-1">
-        <div className="text-sm font-medium text-gray-800 dark:text-slate-200">
-          {address.label}
+      <div className="flex items-center gap-3 mb-3">
+        <div className="flex items-center gap-2">
+          <MapPin className="w-5 h-5 text-blue-600" />
+          <div className="text-lg font-semibold text-gray-900">
+            {address.label}
+          </div>
         </div>
         {address.isDefault && (
-          <span className="text-xs px-2 py-1 bg-green-100 dark:bg-green-900 text-green-800 dark:text-green-200 rounded-full">
+          <span className="inline-flex items-center gap-1 px-3 py-1 bg-green-100 text-green-800 text-sm rounded-full">
+            <Check className="w-3 h-3" />
             Default
           </span>
         )}
       </div>
-      <div className="text-sm text-gray-600 dark:text-slate-300 mb-1 flex items-start gap-1">
-        <MapPin className="w-4 h-4 mt-0.5 flex-shrink-0" />
-        <span>{address.line}</span>
-      </div>
-      <div className="text-xs text-gray-500 dark:text-slate-400">
-        {address.phone}
+      
+      <div className="space-y-2 text-gray-600">
+        <p className="text-sm">{address.line}</p>
+        <p className="text-sm">
+          {address.city}, {address.state}, {address.country} - {address.postalCode}
+        </p>
+        <p className="text-sm font-medium">{address.phone}</p>
       </div>
     </div>
-    <div className="flex flex-col gap-2 ml-4">
+    
+    <div className="flex flex-col sm:flex-row gap-2 mt-4 md:mt-0 md:ml-6">
       {!address.isDefault && (
         <button
           onClick={() => onSetDefault(address.id)}
           disabled={loading}
-          className="text-xs px-3 py-1 border border-gray-300 dark:border-slate-600 rounded text-gray-700 dark:text-slate-200 hover:bg-gray-50 dark:hover:bg-slate-700 disabled:opacity-50 transition-colors"
+          className="px-4 py-2 text-sm text-blue-600 hover:bg-blue-50 rounded-lg border border-blue-200 disabled:opacity-50 transition-colors"
         >
           Set Default
         </button>
@@ -270,40 +255,41 @@ const AddressItem = ({ address, onEdit, onDelete, onSetDefault, loading }) => (
       <button
         onClick={() => onEdit(address)}
         disabled={loading}
-        className="text-xs px-3 py-1 border border-gray-300 dark:border-slate-600 rounded text-gray-700 dark:text-slate-200 hover:bg-gray-50 dark:hover:bg-slate-700 disabled:opacity-50 transition-colors flex items-center gap-1"
+        className="flex items-center gap-2 px-4 py-2 text-sm text-gray-600 hover:bg-gray-50 rounded-lg border border-gray-300 disabled:opacity-50 transition-colors"
       >
-        <Edit className="w-3 h-3" />
+        <Edit className="w-4 h-4" />
         Edit
       </button>
       <button
         onClick={() => onDelete(address.id)}
         disabled={loading}
-        className="text-xs px-3 py-1 border border-red-200 dark:border-red-800 rounded text-red-600 dark:text-red-400 hover:bg-red-50 dark:hover:bg-red-900 disabled:opacity-50 transition-colors flex items-center gap-1"
+        className="flex items-center gap-2 px-4 py-2 text-sm text-red-600 hover:bg-red-50 rounded-lg border border-red-200 disabled:opacity-50 transition-colors"
       >
-        <Trash2 className="w-3 h-3" />
+        <Trash2 className="w-4 h-4" />
         Remove
       </button>
     </div>
-  </li>
+  </div>
 );
 
-// Empty state component
+// Empty State
 const EmptyAddresses = ({ onAddNew, loading }) => (
-  <div className="text-center py-8">
-    <MapPin className="w-12 h-12 text-gray-300 dark:text-slate-600 mx-auto mb-3" />
-    <p className="text-gray-500 dark:text-slate-400 text-sm mb-4">No addresses saved yet</p>
+  <div className="text-center py-12">
+    <MapPin className="w-16 h-16 text-gray-300 mx-auto mb-4" />
+    <h3 className="text-lg font-semibold text-gray-900 mb-2">No addresses saved</h3>
+    <p className="text-gray-600 mb-6">Add your first address for faster checkout</p>
     <button
       onClick={onAddNew}
       disabled={loading}
-      className="inline-flex items-center gap-2 px-4 py-2 bg-blue-600 text-white text-sm font-medium rounded-md hover:bg-blue-700 disabled:bg-blue-400 disabled:cursor-not-allowed transition-colors"
+      className="inline-flex items-center gap-2 px-6 py-3 bg-blue-600 text-white rounded-lg hover:bg-blue-700 disabled:bg-blue-400 disabled:cursor-not-allowed transition-colors"
     >
-      <Plus className="w-4 h-4" />
+      <Plus className="w-5 h-5" />
       Add Your First Address
     </button>
   </div>
 );
 
-// Main component
+// Main Component
 export default function AddressesSection() {
   const [addresses, setAddresses] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -312,7 +298,6 @@ export default function AddressesSection() {
   const [editingAddress, setEditingAddress] = useState(null);
   const [showAddForm, setShowAddForm] = useState(false);
 
-  // Load addresses on component mount
   useEffect(() => {
     loadAddresses();
   }, []);
@@ -321,58 +306,19 @@ export default function AddressesSection() {
     try {
       setLoading(true);
       setError(null);
-      const data = await addressAPI.getAddresses();
-      setAddresses(data);
+      
+      // TODO: Replace with API call
+      // const response = await addressAPI.getAddresses();
+      // setAddresses(response.data);
+      
+      setTimeout(() => {
+        setAddresses(mockAddresses);
+        setLoading(false);
+      }, 1000);
     } catch (err) {
-      console.error('Error loading addresses:', err);
-      setError('Failed to load addresses. Using demo data.');
-      // Fallback to mock data for demonstration
+      setError('Failed to load addresses');
       setAddresses(mockAddresses);
-    } finally {
       setLoading(false);
-    }
-  };
-
-  const handleUpdateAddress = async (addressId, updates) => {
-    try {
-      setActionLoading(true);
-      setError(null);
-      
-      // For demo purposes, update locally
-      // In production, uncomment the API call:
-      // const updatedAddress = await addressAPI.updateAddress(addressId, updates);
-      
-      const updatedAddress = { id: addressId, ...updates };
-      setAddresses(prev => prev.map(addr => 
-        addr.id === addressId ? { ...addr, ...updatedAddress } : addr
-      ));
-      
-      setEditingAddress(null);
-    } catch (err) {
-      setError('Failed to update address');
-      console.error('Error updating address:', err);
-    } finally {
-      setActionLoading(false);
-    }
-  };
-
-  const handleDeleteAddress = async (addressId) => {
-    if (!window.confirm('Are you sure you want to delete this address?')) return;
-
-    try {
-      setActionLoading(true);
-      setError(null);
-      
-      // For demo purposes, delete locally
-      // In production, uncomment the API call:
-      // await addressAPI.deleteAddress(addressId);
-      
-      setAddresses(prev => prev.filter(addr => addr.id !== addressId));
-    } catch (err) {
-      setError('Failed to delete address');
-      console.error('Error deleting address:', err);
-    } finally {
-      setActionLoading(false);
     }
   };
 
@@ -381,16 +327,12 @@ export default function AddressesSection() {
       setActionLoading(true);
       setError(null);
       
-      // For demo purposes, add locally
-      // In production, uncomment the API call:
-      // const newAddress = await addressAPI.addAddress(addressData);
-      
+      // TODO: Replace with API call
       const newAddress = {
-        id: Date.now(), // Temporary ID for demo
+        id: Date.now(),
         ...addressData
       };
       
-      // If setting as default, update other addresses
       if (addressData.isDefault) {
         setAddresses(prev => 
           prev.map(addr => ({ ...addr, isDefault: false }))
@@ -403,7 +345,39 @@ export default function AddressesSection() {
       setShowAddForm(false);
     } catch (err) {
       setError('Failed to add address');
-      console.error('Error adding address:', err);
+    } finally {
+      setActionLoading(false);
+    }
+  };
+
+  const handleUpdateAddress = async (addressId, updates) => {
+    try {
+      setActionLoading(true);
+      setError(null);
+      
+      const updatedAddress = { id: addressId, ...updates };
+      setAddresses(prev => prev.map(addr => 
+        addr.id === addressId ? { ...addr, ...updatedAddress } : addr
+      ));
+      
+      setEditingAddress(null);
+    } catch (err) {
+      setError('Failed to update address');
+    } finally {
+      setActionLoading(false);
+    }
+  };
+
+  const handleDeleteAddress = async (addressId) => {
+    if (!window.confirm('Are you sure you want to delete this address?')) return;
+
+    try {
+      setActionLoading(true);
+      setError(null);
+      
+      setAddresses(prev => prev.filter(addr => addr.id !== addressId));
+    } catch (err) {
+      setError('Failed to delete address');
     } finally {
       setActionLoading(false);
     }
@@ -414,20 +388,14 @@ export default function AddressesSection() {
       setActionLoading(true);
       setError(null);
       
-      // Update all addresses: set the selected one as default, others as non-default
       setAddresses(prev => 
         prev.map(addr => ({
           ...addr,
           isDefault: addr.id === addressId
         }))
       );
-      
-      // In production, make API call to update default status
-      // await addressAPI.updateAddress(addressId, { isDefault: true });
-      
     } catch (err) {
       setError('Failed to set default address');
-      console.error('Error setting default address:', err);
     } finally {
       setActionLoading(false);
     }
@@ -435,12 +403,12 @@ export default function AddressesSection() {
 
   if (loading) {
     return (
-      <div className="bg-white dark:bg-slate-800 rounded-xl p-5 border border-gray-200 dark:border-slate-700 shadow-sm">
+      <div className="bg-white rounded-xl p-6">
         <div className="animate-pulse">
-          <div className="h-6 bg-gray-200 dark:bg-slate-700 rounded w-1/3 mb-4"></div>
-          <div className="space-y-3">
+          <div className="h-6 bg-gray-200 rounded w-1/3 mb-6"></div>
+          <div className="space-y-4">
             {[1, 2].map(i => (
-              <div key={i} className="h-20 bg-gray-200 dark:bg-slate-700 rounded"></div>
+              <div key={i} className="h-32 bg-gray-200 rounded-xl"></div>
             ))}
           </div>
         </div>
@@ -449,17 +417,19 @@ export default function AddressesSection() {
   }
 
   return (
-    <div className="bg-white dark:bg-slate-800 rounded-xl p-5 border border-gray-200 dark:border-slate-700 shadow-sm">
-      <div className="flex items-center justify-between mb-4">
-        <h3 className="text-lg font-semibold text-gray-900 dark:text-slate-100">
-          Delivery Addresses
-        </h3>
+    <div className="bg-white rounded-xl p-6">
+      <div className="flex flex-col sm:flex-row sm:items-center justify-between mb-6 gap-4">
+        <div>
+          <h3 className="text-xl font-bold text-gray-900">Delivery Addresses</h3>
+          <p className="text-gray-600 mt-1">Manage your delivery locations</p>
+        </div>
+        
         <div className="flex items-center gap-4">
           {addresses.length > 0 && (
             <button
               onClick={() => setShowAddForm(true)}
               disabled={actionLoading}
-              className="inline-flex items-center gap-2 text-sm text-blue-600 hover:text-blue-700 hover:underline disabled:opacity-50"
+              className="inline-flex items-center gap-2 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 disabled:opacity-50 transition-colors"
             >
               <Plus className="w-4 h-4" />
               Add New
@@ -467,7 +437,7 @@ export default function AddressesSection() {
           )}
           <Link 
             to="/profile/addresses" 
-            className="text-sm text-blue-600 hover:text-blue-700 hover:underline"
+            className="text-blue-600 hover:text-blue-700 font-medium transition-colors"
           >
             Manage All
           </Link>
@@ -475,13 +445,13 @@ export default function AddressesSection() {
       </div>
 
       {error && (
-        <div className="mb-4 p-3 bg-yellow-50 dark:bg-yellow-900/20 border border-yellow-200 dark:border-yellow-800 rounded-md">
-          <p className="text-sm text-yellow-700 dark:text-yellow-400">{error}</p>
+        <div className="mb-6 p-4 bg-yellow-50 border border-yellow-200 rounded-lg">
+          <p className="text-yellow-700 text-sm">{error}</p>
         </div>
       )}
 
       {showAddForm && (
-        <div className="mb-4">
+        <div className="mb-6">
           <AddressForm
             onSave={handleAddAddress}
             onCancel={() => setShowAddForm(false)}
@@ -491,7 +461,7 @@ export default function AddressesSection() {
       )}
 
       {editingAddress && (
-        <div className="mb-4">
+        <div className="mb-6">
           <AddressForm
             address={editingAddress}
             onSave={(updates) => handleUpdateAddress(editingAddress.id, updates)}
@@ -507,7 +477,7 @@ export default function AddressesSection() {
           loading={actionLoading}
         />
       ) : (
-        <ul className="space-y-3">
+        <div className="space-y-4">
           {addresses.map((address) => (
             <AddressItem
               key={address.id}
@@ -518,7 +488,7 @@ export default function AddressesSection() {
               loading={actionLoading}
             />
           ))}
-        </ul>
+        </div>
       )}
     </div>
   );

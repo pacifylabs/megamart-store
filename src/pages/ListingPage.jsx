@@ -1,12 +1,9 @@
-import { Grid3x3, List, ListFilter, Search, SlidersHorizontal, X } from "lucide-react";
 import { useState, useEffect, useMemo } from "react";
 import { Link } from "react-router-dom";
 import ProductCard from "../components/ProductCard";
-import CartIcon from "../components/ui/CartIcon";
-import { useAuth } from "../context/AuthContext";
-import { useCart } from "../context/CartContext";
-import API, { CURRENCY_SIGN } from "../utils/api-axios";
+import Header from "../components/Header";
 import Footer from "../components/Footer";
+import API, { CURRENCY_SIGN } from "../utils/api-axios";
 
 const currency = CURRENCY_SIGN;
 
@@ -23,7 +20,7 @@ export default function ListingPage() {
   const [selectedSubCategoryId, setSelectedSubCategoryId] = useState("All");
   const [selectedPriceRange, setSelectedPriceRange] = useState([]);
   
-  // UI states
+  // UI states - These will be passed to Header
   const [sortOption, setSortOption] = useState("default");
   const [searchQuery, setSearchQuery] = useState("");
   const [showFilters, setShowFilters] = useState(false);
@@ -34,9 +31,6 @@ export default function ListingPage() {
   const [itemsPerPage, setItemsPerPage] = useState(12);
   const [totalPages, setTotalPages] = useState(1);
   const [totalItems, setTotalItems] = useState(0);
-  
-  const { cartCount } = useCart();
-  const { user } = useAuth();
 
   // Price range options
   const priceRanges = [
@@ -46,6 +40,13 @@ export default function ListingPage() {
     { id: "1000-5000", label: `${currency}1000 - ${currency}5000`, min: 1000, max: 5000 },
     { id: "above-5000", label: `Above ${currency}5000`, min: 5000, max: Infinity }
   ];
+
+  // Calculate active filters count for Header badge
+  const activeFiltersCount = 
+    (selectedCategoryId !== "All" ? 1 : 0) +
+    (selectedSubCategoryId !== "All" ? 1 : 0) +
+    selectedPriceRange.length +
+    (searchQuery && searchQuery.trim() ? 1 : 0);
 
   // Helper function to get category name from ID
   const getCategoryName = (categoryId) => {
@@ -61,55 +62,58 @@ export default function ListingPage() {
     return subCategory ? subCategory.name : "Unknown";
   };
 
-  // Fetch products from API - SIMPLIFIED AND FIXED
+  // Fetch products from API
   const fetchProducts = async (page = 1) => {
     try {
       setLoading(true);
       setError(null);
 
-      // Build query parameters - ONLY send filters that should be handled by API
-      const params = {
-        page,
-        limit: itemsPerPage,
+      // Build API params based on current filters
+      const buildApiParams = () => {
+        const params = {
+          page: currentPage,
+          limit: itemsPerPage,
+        };
+
+        // Add search query if it exists
+        if (searchQuery && searchQuery.trim()) {
+          params.search = searchQuery.trim();
+        }
+
+        // Add category filter if not "All"
+        if (selectedCategoryId !== 'All') {
+          params.category = selectedCategoryId;
+        }
+
+        // Add subcategory filter if not "All"
+        if (selectedSubCategoryId !== 'All') {
+          params.subcategory = selectedSubCategoryId;
+        }
+
+        // Add price range filter to API call
+        if (selectedPriceRange.length > 0) {
+          const minPrices = selectedPriceRange.map(rangeId => {
+            const range = priceRanges.find(r => r.id === rangeId);
+            return range ? range.min : 0;
+          });
+          const maxPrices = selectedPriceRange.map(rangeId => {
+            const range = priceRanges.find(r => r.id === rangeId);
+            return range ? (range.max === Infinity ? 999999999 : range.max) : 999999999;
+          });
+
+          if (minPrices.length > 0) {
+            params.minPrice = Math.min(...minPrices);
+            params.maxPrice = Math.max(...maxPrices);
+          }
+        }
+
+        return params;
       };
 
-      // Add category filter if not "All"
-      if (selectedCategoryId !== 'All') {
-        params.category = selectedCategoryId;
-      }
-
-      // Add subcategory filter if not "All"
-      if (selectedSubCategoryId !== 'All') {
-        params.subcategory = selectedSubCategoryId;
-      }
-
-      // Add search query
-      if (searchQuery && searchQuery.trim()) {
-        params.search = searchQuery.trim();
-      }
-
-      // Add price range filter to API call
-      if (selectedPriceRange.length > 0) {
-        const minPrices = selectedPriceRange.map(rangeId => {
-          const range = priceRanges.find(r => r.id === rangeId);
-          return range ? range.min : 0;
-        });
-        const maxPrices = selectedPriceRange.map(rangeId => {
-          const range = priceRanges.find(r => r.id === rangeId);
-          return range ? (range.max === Infinity ? 999999999 : range.max) : 999999999;
-        });
-
-        if (minPrices.length > 0) {
-          params.minPrice = Math.min(...minPrices);
-          params.maxPrice = Math.max(...maxPrices);
-        }
-      }
-
-      console.log("API Request Params:", params);
+      const params = buildApiParams();
 
       // Make API call
       const response = await API.get('/products/all', { params });
-      console.log("API Response:", response.data);
       
       // Process response - handle different structures
       let productsData = [];
@@ -137,13 +141,8 @@ export default function ListingPage() {
         }
       }
       
-      console.log("Extracted products:", productsData.length);
-      console.log("Pagination data:", paginationData);
-
       // Transform products to match ProductCard expectations
-      const processedProducts = productsData.map((product, index) => {
-        // Calculate price details properly
-        
+      const processedProducts = productsData.map((product) => {
         return {
           id: product._id || product.id,
           name: product.name,
@@ -166,8 +165,6 @@ export default function ListingPage() {
         };
       });
 
-      console.log("Processed products:", processedProducts);
-
       // APPLY CLIENT-SIDE FILTERING ONLY IF API DOESN'T SUPPORT THE FILTERS
       let filteredProducts = processedProducts;
 
@@ -177,16 +174,8 @@ export default function ListingPage() {
         filteredProducts = filteredProducts.filter(product => {
           const productCategoryId = product.categoryId;
           const matchesCategory = productCategoryId === selectedCategoryId;
-          
-          if (!matchesCategory) {
-            console.log(`Product ${product.name} filtered out - category mismatch:`, {
-              productCategoryId,
-              selectedCategoryId
-            });
-          }
           return matchesCategory;
         });
-        console.log(`Category filtering: ${beforeCount} -> ${filteredProducts.length} products`);
       }
 
       // Client-side subcategory filtering (if API didn't handle it properly)
@@ -195,16 +184,8 @@ export default function ListingPage() {
         filteredProducts = filteredProducts.filter(product => {
           const productSubCategoryId = product.subCategoryId;
           const matchesSubCategory = productSubCategoryId === selectedSubCategoryId;
-          
-          if (!matchesSubCategory) {
-            console.log(`Product ${product.name} filtered out - subcategory mismatch:`, {
-              productSubCategoryId,
-              selectedSubCategoryId
-            });
-          }
           return matchesSubCategory;
         });
-        console.log(`Subcategory filtering: ${beforeCount} -> ${filteredProducts.length} products`);
       }
 
       // Client-side price range filtering (if API didn't handle it properly)
@@ -218,17 +199,10 @@ export default function ListingPage() {
             
             const minPrice = range.min;
             const maxPrice = range.max === Infinity ? 999999999 : range.max;
-            const isInRange = productPrice >= minPrice && productPrice <= maxPrice;
-            
-            return isInRange;
+            return productPrice >= minPrice && productPrice <= maxPrice;
           });
-          
-          if (!isInSelectedRange) {
-            console.log(`Product ${product.name} filtered out - price ${productPrice} not in selected ranges`);
-          }
           return isInSelectedRange;
         });
-        console.log(`Price filtering: ${beforeCount} -> ${filteredProducts.length} products`);
       }
 
       setProducts(filteredProducts);
@@ -254,15 +228,7 @@ export default function ListingPage() {
         }
       }
 
-      console.log("Final state:", {
-        products: filteredProducts.length,
-        totalPages: Math.ceil(filteredProducts.length / itemsPerPage),
-        totalItems: filteredProducts.length,
-        currentPage: page
-      });
-
     } catch (err) {
-      console.error("Error fetching products:", err);
       setError(err.response?.data?.message || "Failed to load products. Please try again later.");
       setProducts([]);
       setTotalPages(1);
@@ -277,7 +243,6 @@ export default function ListingPage() {
   const fetchCategories = async () => {
     try {
       const response = await API.get('/categories');
-      console.log("Categories response:", response.data);
       const categoriesData = response.data || [];
       const activeCategories = categoriesData.filter(cat => cat.isActive !== false);
       
@@ -293,7 +258,6 @@ export default function ListingPage() {
       setCategories([{ id: "All", name: "All" }, ...categoryList]);
       
     } catch (err) {
-      console.error("Error fetching categories:", err);
       setCategories([{ id: "All", name: "All" }]);
     }
   };
@@ -306,9 +270,7 @@ export default function ListingPage() {
     }
 
     try {
-      console.log("Fetching subcategories for category:", categoryId);
       const response = await API.get(`/categories/${categoryId}/subcategories`);
-      console.log("Subcategories response:", response.data);
       const subcategoriesData = response.data || [];
       
       // Create subcategory list with ID and name
@@ -344,25 +306,20 @@ export default function ListingPage() {
     }
   }, [selectedCategoryId]);
 
-  // Refetch when filters change - FIXED DEPENDENCIES
+  // Handle search query from URL
+  const location = useLocation();
   useEffect(() => {
-    const timer = setTimeout(() => {
-      setCurrentPage(1);
-      fetchProducts(1);
-    }, 300);
-    
-    return () => clearTimeout(timer);
-  }, [selectedCategoryId, selectedSubCategoryId, selectedPriceRange, itemsPerPage]);
+    const params = new URLSearchParams(location.search);
+    const searchQueryParam = params.get('search');
+    if (searchQueryParam && searchQueryParam !== searchQuery) {
+      setSearchQuery(searchQueryParam);
+    }
+  }, [location.search]);
 
-  // Refetch when search changes
+  // Fetch products when filters change or search query updates
   useEffect(() => {
-    const timer = setTimeout(() => {
-      setCurrentPage(1);
-      fetchProducts(1);
-    }, 500);
-    
-    return () => clearTimeout(timer);
-  }, [searchQuery]);
+    fetchProducts();
+  }, [currentPage, selectedCategoryId, selectedSubCategoryId, sortOption, searchQuery]);
 
   // Sort products function
   const sortProducts = (productsToSort, sortOption) => {
@@ -415,9 +372,23 @@ export default function ListingPage() {
     return sortProducts(products, sortOption);
   }, [products, sortOption]);
 
+  // Handle search input change
+  const handleSearchChange = (e) => {
+    const newSearchQuery = e.target.value;
+    setSearchQuery(newSearchQuery);
+    
+    // Update URL without triggering a page reload
+    const url = new URL(window.location);
+    if (newSearchQuery.trim()) {
+      url.searchParams.set('search', newSearchQuery);
+    } else {
+      url.searchParams.delete('search');
+    }
+    window.history.pushState({}, '', url);
+  };
+
   // Handle category change
   const handleCategoryChange = (categoryId) => {
-    console.log("Category changed to:", categoryId);
     setSelectedCategoryId(categoryId);
     setSelectedSubCategoryId("All");
     setCurrentPage(1);
@@ -426,7 +397,6 @@ export default function ListingPage() {
 
   // Handle subcategory change
   const handleSubCategoryChange = (subCategoryId) => {
-    console.log("Subcategory changed to:", subCategoryId);
     setSelectedSubCategoryId(subCategoryId);
     setCurrentPage(1);
   };
@@ -533,26 +503,9 @@ export default function ListingPage() {
     return buttons;
   };
 
-  // Calculate active filters count
-  const activeFiltersCount = 
-    (selectedCategoryId !== "All" ? 1 : 0) +
-    (selectedSubCategoryId !== "All" ? 1 : 0) +
-    selectedPriceRange.length +
-    (searchQuery && searchQuery.trim() ? 1 : 0);
-
   // Calculate display range
   const startIndex = totalItems > 0 ? (currentPage - 1) * itemsPerPage + 1 : 0;
   const endIndex = Math.min(currentPage * itemsPerPage, totalItems);
-
-  // Debug info
-  console.log("Current filter state:", {
-    selectedCategoryId,
-    selectedSubCategoryId,
-    selectedPriceRange,
-    searchQuery,
-    productsCount: products.length,
-    sortedProductsCount: sortedProducts.length
-  });
 
   return (
     <div className="min-h-screen bg-gray-50">
@@ -583,108 +536,22 @@ export default function ListingPage() {
         </div>
       )}
 
-      {/* Rest of the JSX remains exactly the same as before */}
-      {/* Top Navbar */}
-      <div className="bg-white px-4 sm:px-6 py-3 border-b border-slate-100 sticky top-0 z-20 shadow-sm">
-        <div className="max-w-[95%] mx-auto flex items-center justify-between gap-4">
-          {/* Logo */}
-          <Link to="/" className="flex items-center gap-2 flex-shrink-0">
-            <ListFilter className="w-8 h-6 sm:w-10 sm:h-7 text-blue-500" />
-            <div className="text-base sm:text-lg md:text-xl font-extrabold text-blue-600">
-              MegaMart
-            </div>
-          </Link>
-
-          {/* Search Bar */}
-          <div className="flex-1 max-w-2xl mx-2 sm:mx-4">
-            <div className="relative">
-              <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400 w-4 h-4" />
-              <input
-                value={searchQuery}
-                onChange={(e) => setSearchQuery(e.target.value)}
-                className="w-full rounded-lg border border-[#e6eef2] bg-blue-50 px-10 py-2 text-sm placeholder:text-slate-400 focus:outline-none focus:ring-2 focus:ring-blue-200"
-                placeholder="Search products..."
-              />
-              {searchQuery && (
-                <button
-                  onClick={() => setSearchQuery("")}
-                  className="absolute right-3 top-1/2 -translate-y-1/2 text-slate-400 hover:text-slate-600"
-                >
-                  <X className="w-4 h-4" />
-                </button>
-              )}
-            </div>
-          </div>
-
-          {/* Right Section */}
-          <div className="flex items-center gap-2 sm:gap-3">
-            {/* Mobile Filter Button */}
-            <button
-              onClick={() => setShowFilters(!showFilters)}
-              className="lg:hidden p-2 rounded-lg hover:bg-gray-100 transition relative"
-              aria-label="Toggle filters"
-            >
-              <SlidersHorizontal className="w-5 h-5 text-gray-600" />
-              {activeFiltersCount > 0 && (
-                <span className="absolute -top-1 -right-1 bg-blue-500 text-white text-xs w-5 h-5 rounded-full flex items-center justify-center">
-                  {activeFiltersCount}
-                </span>
-              )}
-            </button>
-
-            {/* Sort Dropdown - Hidden on mobile */}
-            <select
-              value={sortOption}
-              onChange={(e) => setSortOption(e.target.value)}
-              className="hidden sm:block rounded-lg border border-gray-300 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-200"
-            >
-              <option value="default">Sort By</option>
-              <option value="price-low">Price: Low to High</option>
-              <option value="price-high">Price: High to Low</option>
-              <option value="name-asc">Name: A to Z</option>
-              <option value="name-desc">Name: Z to A</option>
-              <option value="newest">Newest First</option>
-              <option value="discount">Highest Discount</option>
-            </select>
-
-            {/* Cart Icon */}
-            <CartIcon />
-          </div>
-        </div>
-
-        {/* Mobile Sort Bar */}
-        <div className="sm:hidden mt-3 flex items-center gap-2">
-          <select
-            value={sortOption}
-            onChange={(e) => setSortOption(e.target.value)}
-            className="flex-1 rounded-lg border border-gray-300 px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-200"
-          >
-            <option value="default">Sort By</option>
-            <option value="price-low">Price: Low to High</option>
-            <option value="price-high">Price: High to Low</option>
-            <option value="name-asc">Name: A to Z</option>
-            <option value="name-desc">Name: Z to A</option>
-            <option value="newest">Newest First</option>
-            <option value="discount">Highest Discount</option>
-          </select>
-
-          {/* View Mode Toggle */}
-          <div className="flex rounded-lg border border-gray-300 overflow-hidden">
-            <button
-              onClick={() => setViewMode("grid")}
-              className={`p-2 ${viewMode === "grid" ? "bg-blue-100 text-blue-600" : "bg-white text-gray-600"}`}
-            >
-              <Grid3x3 className="w-4 h-4" />
-            </button>
-            <button
-              onClick={() => setViewMode("list")}
-              className={`p-2 ${viewMode === "list" ? "bg-blue-100 text-blue-600" : "bg-white text-gray-600"}`}
-            >
-              <List className="w-4 h-4" />
-            </button>
-          </div>
-        </div>
-      </div>
+      {/* Header with listing page functionality */}
+      <Header 
+        showBanner={true}
+        showSearchBar={true}
+        showCart={true}
+        showSortFilter={true}
+        sortOption={sortOption}
+        setSortOption={setSortOption}
+        viewMode={viewMode}
+        setViewMode={setViewMode}
+        showFilters={showFilters}
+        setShowFilters={setShowFilters}
+        activeFiltersCount={activeFiltersCount}
+        searchQuery={searchQuery}
+        setSearchQuery={setSearchQuery}
+      />
 
       {/* Main Content */}
       <div className="max-w-[95%] mx-auto px-2 sm:px-6 py-4 sm:py-6">
@@ -727,7 +594,9 @@ export default function ListingPage() {
             <div className="bg-white p-4 rounded-lg shadow-sm sticky top-24">
               <div className="flex items-center justify-between mb-4">
                 <h3 className="text-lg font-semibold text-slate-700 flex items-center gap-2">
-                  <SlidersHorizontal className="w-5 h-5" />
+                  <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M3 4a1 1 0 011-1h16a1 1 0 011 1v2.586a1 1 0 01-.293.707l-6.414 6.414a1 1 0 00-.293.707V17l-4 4v-6.586a1 1 0 00-.293-.707L3.293 7.207A1 1 0 013 6.5V4z" />
+                  </svg>
                   Filters
                 </h3>
                 {activeFiltersCount > 0 && (
@@ -806,28 +675,34 @@ export default function ListingPage() {
                     {selectedCategoryId !== "All" && (
                       <span className="inline-flex items-center gap-1 bg-blue-100 text-blue-700 text-xs px-2 py-1 rounded">
                         {getCategoryName(selectedCategoryId)}
-                        <X 
-                          className="w-3 h-3 cursor-pointer hover:text-blue-900" 
+                        <button 
                           onClick={() => setSelectedCategoryId("All")}
-                        />
+                          className="hover:text-blue-900"
+                        >
+                          ×
+                        </button>
                       </span>
                     )}
                     {selectedSubCategoryId !== "All" && (
                       <span className="inline-flex items-center gap-1 bg-blue-100 text-blue-700 text-xs px-2 py-1 rounded">
                         {getSubCategoryName(selectedSubCategoryId)}
-                        <X 
-                          className="w-3 h-3 cursor-pointer hover:text-blue-900" 
+                        <button 
                           onClick={() => setSelectedSubCategoryId("All")}
-                        />
+                          className="hover:text-blue-900"
+                        >
+                          ×
+                        </button>
                       </span>
                     )}
                     {searchQuery && searchQuery.trim() && (
                       <span className="inline-flex items-center gap-1 bg-blue-100 text-blue-700 text-xs px-2 py-1 rounded">
                         Search: "{searchQuery}"
-                        <X 
-                          className="w-3 h-3 cursor-pointer hover:text-blue-900" 
+                        <button 
                           onClick={() => setSearchQuery("")}
-                        />
+                          className="hover:text-blue-900"
+                        >
+                          ×
+                        </button>
                       </span>
                     )}
                     {selectedPriceRange.map(rangeId => {
@@ -835,10 +710,12 @@ export default function ListingPage() {
                       return (
                         <span key={rangeId} className="inline-flex items-center gap-1 bg-blue-100 text-blue-700 text-xs px-2 py-1 rounded">
                           {range.label}
-                          <X 
-                            className="w-3 h-3 cursor-pointer hover:text-blue-900" 
+                          <button 
                             onClick={() => handlePriceRangeToggle(rangeId)}
-                          />
+                            className="hover:text-blue-900"
+                          >
+                            ×
+                          </button>
                         </span>
                       );
                     })}
@@ -861,7 +738,9 @@ export default function ListingPage() {
                     onClick={() => setShowFilters(false)}
                     className="p-2 hover:bg-gray-100 rounded-lg"
                   >
-                    <X className="w-5 h-5" />
+                    <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                    </svg>
                   </button>
                 </div>
 
@@ -952,7 +831,9 @@ export default function ListingPage() {
             {sortedProducts.length === 0 && !loading ? (
               <div className="bg-white rounded-lg p-12 text-center">
                 <div className="bg-gray-100 w-20 h-20 rounded-full flex items-center justify-center mx-auto mb-4">
-                  <Search className="w-10 h-10 text-gray-400" />
+                  <svg className="w-10 h-10 text-gray-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+                  </svg>
                 </div>
                 <h3 className="text-xl font-semibold text-gray-900 mb-2">No products found</h3>
                 <p className="text-gray-600 mb-4">

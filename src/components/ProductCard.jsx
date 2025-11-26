@@ -14,7 +14,6 @@ export default function ProductCard({ product }) {
   const quantity = cartItem?.qty || 0;
 
   const handleProductClick = () => {
-    console.log("product: ", product)
     navigate(`/product/${product.id}`, { state: { product } });
   };
 

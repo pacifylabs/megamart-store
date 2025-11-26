@@ -14,7 +14,6 @@ export default function TopCategories() {
       setError(null);
       
       const response = await API.get('/categories');
-      console.log("Categories API response:", response.data);
       
       // Process the API response to match the expected structure
       const categoriesData = response.data || [];

@@ -1,10 +1,11 @@
-import { User, Mail, Phone, MapPin, Save, Calendar, Globe, Edit } from "lucide-react";
+// components/profile/ProfileForm.jsx
+import { User, Mail, Phone, MapPin, Save, Calendar, Globe, Edit, Loader } from "lucide-react";
 import { useState, useEffect } from "react";
-import { useAuth } from "../../context/AuthContext";
-import API from "../../utils/api-axios";
+import { useAuth } from "../../contexts/AuthContext";
+import { userService } from "../../services/api/userService";
 
 export default function ProfileForm() {
-  const { user: authUser, handleLogin } = useAuth();
+  const { user: authUser, updateUserProfile } = useAuth();
   const [formData, setFormData] = useState({
     firstName: "",
     lastName: "",
@@ -48,55 +49,7 @@ export default function ProfileForm() {
       const date = new Date(dateString);
       return date.toISOString().split('T')[0];
     } catch (error) {
-      console.error("Error formatting date:", error);
       return "";
-    }
-  };
-
-  const updateUserProfile = async (userData) => {
-    try {
-      setLoading(true);
-      setError("");
-      
-      const userId = authUser?.id;
-      if (!userId) {
-        throw new Error("User ID not found");
-      }
-
-      console.log("Updating user profile with data:", userData);
-      
-      // Make API call to update user
-      const response = await API.put(`/users/${userId}`, userData);
-      const updatedUser = response.data;
-      
-      console.log("Profile update response:", updatedUser);
-      
-      // Update auth context with new user data
-      if (handleLogin) {
-        handleLogin(updatedUser);
-      }
-      
-      // Update localStorage
-      const currentUser = JSON.parse(localStorage.getItem("user") || "{}");
-      const updatedUserData = { ...currentUser, ...updatedUser };
-      localStorage.setItem("user", JSON.stringify(updatedUserData));
-      
-      setSuccess(true);
-      setEditing(false);
-      
-      setTimeout(() => setSuccess(false), 3000);
-      
-      return updatedUser;
-    } catch (err) {
-      console.error("Error updating user:", err);
-      const errorMessage = err.response?.data?.message || 
-                          err.response?.data?.error || 
-                          err.message || 
-                          "Failed to update profile";
-      setError(errorMessage);
-      throw err;
-    } finally {
-      setLoading(false);
     }
   };
 
@@ -112,6 +65,9 @@ export default function ProfileForm() {
     e.preventDefault();
     
     try {
+      setLoading(true);
+      setError("");
+      
       // Prepare data for API
       const submitData = {
         firstName: formData.firstName.trim() || null,
@@ -125,10 +81,26 @@ export default function ProfileForm() {
         postalCode: formData.postalCode.trim() || null
       };
       
-      console.log("Submitting profile data:", submitData);
-      await updateUserProfile(submitData);
+      
+      // Call API service
+      const result = await userService.updateProfile(authUser.id, submitData);
+      
+      if (result.success) {
+        
+        // Update auth context with new user data
+        await updateUserProfile(result.data);
+        
+        setSuccess(true);
+        setEditing(false);
+        
+        setTimeout(() => setSuccess(false), 3000);
+      } else {
+        setError(result.error || "Failed to update profile");
+      }
     } catch (err) {
-      // Error is already handled in updateUserProfile
+      setError("An unexpected error occurred. Please try again.");
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -173,13 +145,14 @@ export default function ProfileForm() {
   }
 
   return (
-    <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
+    <div className="bg-white rounded-xl p-6">
       <div className="flex items-center justify-between mb-6">
         <h2 className="text-2xl font-bold text-gray-900">Profile Information</h2>
         {!editing && (
           <button
             onClick={handleEdit}
-            className="flex items-center gap-2 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition"
+            className="flex items-center gap-2 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 transition-colors"
+            disabled={loading}
           >
             <Edit className="w-4 h-4" />
             Edit Profile
@@ -209,6 +182,7 @@ export default function ProfileForm() {
             onChange={handleChange}
             disabled={!editing}
             placeholder="Enter your first name"
+            required
           />
 
           <InputField
@@ -218,6 +192,7 @@ export default function ProfileForm() {
             onChange={handleChange}
             disabled={!editing}
             placeholder="Enter your last name"
+            required
           />
 
           <InputField
@@ -307,12 +282,12 @@ export default function ProfileForm() {
   );
 }
 
-// Sub-components for ProfileForm (same as before)
-function InputField({ icon: Icon, label, type = "text", ...props }) {
+// Sub-components
+function InputField({ icon: Icon, label, type = "text", required = false, ...props }) {
   return (
     <div>
       <label className="block text-sm font-medium text-gray-700 mb-2">
-        {label}
+        {label} {required && <span className="text-red-500">*</span>}
       </label>
       <div className="relative">
         {Icon && (
@@ -320,10 +295,11 @@ function InputField({ icon: Icon, label, type = "text", ...props }) {
         )}
         <input
           type={type}
+          required={required}
           {...props}
           className={`w-full ${
             Icon ? "pl-10" : "pl-4"
-          } pr-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 disabled:bg-gray-50 disabled:cursor-not-allowed transition`}
+          } pr-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent disabled:bg-gray-50 disabled:cursor-not-allowed transition-colors`}
         />
       </div>
     </div>
@@ -342,7 +318,7 @@ function GenderSelect({ value, onChange, disabled }) {
           value={value}
           onChange={onChange}
           disabled={disabled}
-          className="w-full pl-4 pr-10 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 disabled:bg-gray-50 appearance-none transition"
+          className="w-full pl-4 pr-10 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent disabled:bg-gray-50 appearance-none transition-colors"
         >
           <option value="">Select Gender</option>
           <option value="male">Male</option>
@@ -372,7 +348,7 @@ function AddressField({ value, onChange, disabled }) {
         onChange={onChange}
         disabled={disabled}
         rows="3"
-        className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 disabled:bg-gray-50 transition"
+        className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent disabled:bg-gray-50 transition-colors resize-none"
         placeholder="Enter your full address"
       />
     </div>
@@ -385,16 +361,25 @@ function FormActions({ loading, onCancel }) {
       <button
         type="submit"
         disabled={loading}
-        className="flex-1 flex items-center justify-center gap-2 py-3 bg-blue-600 text-white font-semibold rounded-lg hover:bg-blue-700 transition disabled:opacity-50 disabled:cursor-not-allowed"
+        className="flex-1 flex items-center justify-center gap-2 py-3 bg-blue-600 text-white font-semibold rounded-lg hover:bg-blue-700 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
       >
-        <Save className="w-5 h-5" />
-        {loading ? "Saving..." : "Save Changes"}
+        {loading ? (
+          <>
+            <Loader className="w-5 h-5 animate-spin" />
+            Saving...
+          </>
+        ) : (
+          <>
+            <Save className="w-5 h-5" />
+            Save Changes
+          </>
+        )}
       </button>
       <button
         type="button"
         onClick={onCancel}
         disabled={loading}
-        className="px-6 py-3 border-2 border-gray-300 text-gray-700 font-semibold rounded-lg hover:bg-gray-50 transition disabled:opacity-50"
+        className="px-6 py-3 border-2 border-gray-300 text-gray-700 font-semibold rounded-lg hover:bg-gray-50 transition-colors disabled:opacity-50"
       >
         Cancel
       </button>
@@ -431,10 +416,10 @@ function ProfileStatus({ user }) {
 
 function ProfileFormSkeleton() {
   return (
-    <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
+    <div className="bg-white rounded-xl p-6">
       <div className="flex items-center justify-between mb-6">
-        <h2 className="text-2xl font-bold text-gray-900">Profile Information</h2>
-        <div className="w-24 h-10 bg-gray-200 rounded-lg animate-pulse"></div>
+        <div className="h-8 bg-gray-200 rounded w-48 animate-pulse"></div>
+        <div className="h-10 bg-gray-200 rounded w-24 animate-pulse"></div>
       </div>
       <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
         {[...Array(8)].map((_, i) => (

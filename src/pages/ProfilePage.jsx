@@ -1,20 +1,36 @@
 // src/pages/ProfilePage.jsx
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useAuth } from "../context/AuthContext";
+import { useLocation } from "react-router-dom";
 import { X } from "lucide-react";
 
 import ProfileSidebar from "../components/profile/ProfileSidebar";
 import ProfileInfo from "../components/profile/ProfileInfo";
 import OrderHistory from "../components/profile/OrderHistory";
-import WishlistSection from "../components/profile/WishlistSection";
 import AddressesSection from "../components/profile/AddressesSection";
 import SettingsPanel from "../components/profile/SettingsPanel";
 import Header from "../components/Header";
 
 export default function ProfilePage() {
   const { user } = useAuth();
-  const [activeTab, setActiveTab] = useState("profile");
+  const location = useLocation();
+  const [activeTab, setActiveTab] = useState('profile');
   const [sidebarOpen, setSidebarOpen] = useState(false);
+
+  useEffect(() => {
+    // Set initial active tab from URL hash or location state
+    const hash = window.location.hash.replace('#', '');
+    const tabFromState = location.state?.activeTab;
+    
+    if (tabFromState) {
+      setActiveTab(tabFromState);
+      // Clear the state to prevent it from overriding future hash changes
+      window.history.replaceState({}, '');
+    } else if (hash) {
+      setActiveTab(hash);
+      setActiveTab('profile');
+    }
+  }, [location.hash, location.state]);
 
   if (!user) {
     return (
@@ -35,7 +51,11 @@ export default function ProfilePage() {
   return (
     <div className="min-h-screen bg-gray-50">
       {/* Header with mobile toggle */}
-      <Header />
+      <Header 
+        activeTab={activeTab}
+        setActiveTab={setActiveTab}
+        isSidebarOpen={sidebarOpen}
+      />
 
       {/* Main Layout */}
       <div className="max-w-[95%] mx-auto px-4 py-8 grid grid-cols-1 lg:grid-cols-4 gap-8 relative">
@@ -45,7 +65,8 @@ export default function ProfilePage() {
           <ProfileSidebar
             activeTab={activeTab}
             setActiveTab={setActiveTab}
-            showProfileInfo={activeTab === "profile"}
+            showProfileInfo={activeTab}
+            onClose={() => setSidebarOpen(false)}
           />
         </div>
 
@@ -86,7 +107,6 @@ export default function ProfilePage() {
         <div className="lg:col-span-3 transition-opacity duration-300" key={activeTab}>
           {activeTab === "profile" && <ProfileInfo />}
           {activeTab === "orders" && <OrderHistory />}
-          {activeTab === "wishlist" && <WishlistSection />}
           {activeTab === "addresses" && <AddressesSection />}
           {activeTab === "settings" && <SettingsPanel />}
         </div>

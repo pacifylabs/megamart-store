@@ -120,17 +120,14 @@ export default function ResetPasswordPage() {
   const handleSubmit = async (e) => {
     e.preventDefault();
     setError("");
-    console.log("🔄 Form submission started");
 
     if (!validateForm()) {
-      console.log("❌ Form validation failed");
       return;
     }
 
     setLoading(true);
 
     try {
-      console.log("📤 Making API request to reset password...");
       
       const response = await API.patch(
         "/auth/forgot-password",
@@ -142,7 +139,6 @@ export default function ResetPasswordPage() {
         }
       );
 
-      console.log("✅ Password reset successful:", response);
       setShowSuccessModal(true);
       
       // Clear form
@@ -152,7 +148,6 @@ export default function ResetPasswordPage() {
       });
       
     } catch (err) {
-      console.log("❌ Password reset error:", err);
       const errorMessage = err.response?.data?.message || 
                           err.response?.data?.error || 
                           "An error occurred. Please try again later.";
@@ -167,7 +162,6 @@ export default function ResetPasswordPage() {
   };
 
   const handleRequestNewLink = () => {
-    console.log("🔄 Requesting new password reset link");
     // Reset the form and show a message that a new link has been requested
     setFormData({
       newPassword: "",
@@ -179,20 +173,17 @@ export default function ResetPasswordPage() {
   };
 
   const handleRetry = () => {
-    console.log("🔄 Retrying password reset");
     setShowErrorModal(false);
     setModalError("");
     setError("");
   };
 
   const handleCloseSuccessModal = () => {
-    console.log("🔒 Closing success modal - redirecting to login");
     setShowSuccessModal(false);
     navigate("/login");
   };
 
   const handleCloseErrorModal = () => {
-    console.log("🔒 Closing error modal - staying on page");
     setShowErrorModal(false);
   };
 

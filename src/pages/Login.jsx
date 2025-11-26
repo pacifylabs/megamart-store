@@ -20,12 +20,8 @@ function LoginPage() {
     setLoading(true);
 
     try {
-      console.log("Attempting login with:", form.email);
-      
       // Use handleLogin from AuthContext
       const response = await handleLogin(form);
-      console.log("Login response received:", response);
-      
       setSuccess("Login successful! Redirecting...");
       
       // Short delay to show success message and ensure state updates
@@ -34,8 +30,6 @@ function LoginPage() {
       }, 1000);
       
     } catch (err) {
-      console.error("Login page error:", err);
-      
       if (err.response) {
         const errorMessage = err.response.data?.message || 
                             err.response.data?.error || 

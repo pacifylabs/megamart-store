@@ -14,9 +14,7 @@ export default function SmartphoneDeals() {
     const fetchPhones = async () => {
       try {
         const response = await API.get(`/products`);
-        console.log('API Response:', response.data);
         const products = response.data.data || [];
-        console.log('Raw products:', products);
         
         const phoneProducts = products.filter(product => {
           if (!product || !product.category) return false;
@@ -28,7 +26,6 @@ export default function SmartphoneDeals() {
           return category.toLowerCase().includes('phone') || category.toLowerCase().includes('electronics');
         });
         
-        console.log('Filtered phone products:', phoneProducts);
         
         const filteredProducts = phoneProducts.map(product => ({
           id: product._id || product.id,
@@ -45,7 +42,6 @@ export default function SmartphoneDeals() {
         }));
         setPhones(filteredProducts);
       } catch (err) {
-        console.error("Error fetching products:", err);
         setError("Failed to load products. Please try again later.");
       } finally {
         setLoading(false);

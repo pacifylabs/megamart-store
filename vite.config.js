@@ -19,10 +19,7 @@ export default defineConfig(({ mode }) => {
             'react-vendor': ['react', 'react-dom', 'react-router-dom'],
             'ui-vendor': ['lucide-react'],
             'utils-vendor': ['axios', 'clsx']
-          },
-          chunkFileNames: 'assets/js/[name]-[hash].js',
-          entryFileNames: 'assets/js/[name]-[hash].js',
-          assetFileNames: 'assets/[ext]/[name]-[hash][extname]'
+          }
         }
       }
     },
@@ -33,15 +30,6 @@ export default defineConfig(({ mode }) => {
     preview: {
       port: 8080,
       open: true
-    },
-    optimizeDeps: {
-      include: ['react', 'react-dom', 'react-router-dom'],
-      esbuildOptions: {
-        target: 'es2020'
-      }
-    },
-    define: {
-      'process.env': {}
     }
   };
 });

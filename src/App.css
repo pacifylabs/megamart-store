@@ -1,4 +1,5 @@
-@import "tailwindcss";
+/* Tailwind CSS base styles will be injected via PostCSS */
+
 .hero-prev,
 .hero-next,
 .swiper-button-prev,
@@ -11,20 +12,24 @@
   box-shadow: 0 6px 16px rgba(11, 35, 64, 0.12);
   border: 1px solid rgba(15, 23, 42, 0.06);
 }
+
 .hero-prev svg,
 .hero-next svg,
 .swiper-button-prev::after,
 .swiper-button-next::after {
   color: #0f172a;
 }
+
 .swiper-button-prev {
   left: 8px;
   right: auto;
 }
+
 .swiper-button-next {
   right: 8px;
   left: auto;
 }
+
 .swiper-pagination-bullet {
   background: #d1d5db;
   width: 8px;
@@ -32,40 +37,50 @@
   opacity: 1;
   text-align: left;
 }
+
 .swiper-pagination-bullet-active {
   background: #0369a1;
 }
+
 .swiper-slide .rounded-xl {
   border-radius: 12px;
 }
+
 .product-card-border {
   border-color: #e6eef2;
 }
+
 .category-ring {
   border: 1px solid #eef6fb;
   box-shadow: 0 6px 16px rgba(14, 50, 91, 0.04);
-  .hero-prev,
-  .hero-next {
-    z-index: 20;
-  }
 }
+
+.hero-prev,
+.hero-next {
+  z-index: 20;
+}
+
 @media (max-width: 1024px) {
   .max-w-\[1200px\] {
     max-width: 960px;
   }
 }
+
 .hide-scrollbar {
   scrollbar-width: none;
   -ms-overflow-style: none;
 }
+
 .hide-scrollbar::-webkit-scrollbar {
   display: none;
 }
+
 .logo-bg {
   background-image: url("/src/assets/bg-logo.svg");
   background-repeat: repeat;
   background-size: contain;
 }
+
 @keyframes shimmer {
   0% {
     background-position: -468px 0;

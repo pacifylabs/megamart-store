@@ -1,0 +1,12 @@
+{
+  "version": 2,
+  "buildCommand": "pnpm build",
+  "outputDirectory": "dist",
+  "installCommand": "pnpm install",
+  "functions": {
+    "**/*.js": {
+      "maxDuration": 30
+    }
+  },
+  "regions": ["all"]
+}

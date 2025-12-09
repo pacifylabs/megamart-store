@@ -2,31 +2,23 @@ import { useEffect, useState } from "react";
 import ProductCard from "../components/ProductCard";
 import { Link } from "react-router-dom";
 import API from "../utils/api-axios";
-
 const currency = "₹";
-
 export default function SmartphoneDeals() {
   const [phones, setPhones] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
-
   useEffect(() => {
     const fetchPhones = async () => {
       try {
         const response = await API.get(`/products`);
         const products = response.data.data || [];
-        
         const phoneProducts = products.filter(product => {
           if (!product || !product.category) return false;
-          
           const category = typeof product.category === 'object' 
             ? product.category.name || ''
             : String(product.category);
-            
           return category.toLowerCase().includes('phone') || category.toLowerCase().includes('electronics');
         });
-        
-        
         const filteredProducts = phoneProducts.map(product => ({
           id: product._id || product.id,
           name: product.name,
@@ -47,10 +39,8 @@ export default function SmartphoneDeals() {
         setLoading(false);
       }
     };
-
     fetchPhones();
   }, []);
-
   if (loading) {
     return (
       <div className="max-w-[95%] mx-auto px-4 sm:px-6 py-8 text-center">
@@ -58,7 +48,6 @@ export default function SmartphoneDeals() {
       </div>
     );
   }
-
   if (error) {
     return (
       <div className="max-w-[95%] mx-auto px-4 sm:px-6 py-8 text-center text-red-500">
@@ -66,7 +55,6 @@ export default function SmartphoneDeals() {
       </div>
     );
   }
-
   return (
     <div className="max-w-[95%] mx-auto px-4 sm:px-6">
       <div className="flex items-center justify-between mb-4">
@@ -82,7 +70,6 @@ export default function SmartphoneDeals() {
           View All →
         </Link>
       </div>
-
       {phones.length === 0 ? (
         <div className="text-center py-8 text-gray-500">
           No smartphone deals available at the moment.

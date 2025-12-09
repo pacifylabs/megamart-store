@@ -2,12 +2,6 @@
 import React from "react";
 import { Shield, Bell, Lock, Palette, Download, Globe } from "lucide-react";
 import { Link } from "react-router-dom";
-
-/**
- * Settings Panel - Links to various settings sections
- * Each section will have its own dedicated page/component
- */
-
 const settingsSections = [
   {
     id: "security",
@@ -18,10 +12,8 @@ const settingsSections = [
     features: ["Change password", "Two-factor auth", "Login alerts"]
   }
 ];
-
 const SettingsCard = ({ section }) => {
   const Icon = section.icon;
-  
   return (
     <Link
       to={section.href}
@@ -31,7 +23,6 @@ const SettingsCard = ({ section }) => {
         <div className="p-3 bg-blue-100 rounded-lg group-hover:bg-blue-200 transition-colors">
           <Icon className="w-6 h-6 text-blue-600" />
         </div>
-        
         <div className="flex-1 min-w-0">
           <h3 className="text-lg font-semibold text-gray-900 group-hover:text-blue-600 transition-colors">
             {section.title}
@@ -39,7 +30,6 @@ const SettingsCard = ({ section }) => {
           <p className="text-gray-600 mt-1 text-sm">
             {section.description}
           </p>
-          
           <div className="mt-3 flex flex-wrap gap-1">
             {section.features.map((feature, index) => (
               <span
@@ -51,7 +41,6 @@ const SettingsCard = ({ section }) => {
             ))}
           </div>
         </div>
-        
         <div className="text-gray-400 group-hover:text-blue-600 transition-colors">
           <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
@@ -61,7 +50,6 @@ const SettingsCard = ({ section }) => {
     </Link>
   );
 };
-
 export default function SettingsPanel() {
   return (
     <div className="bg-white rounded-xl p-6">
@@ -71,14 +59,12 @@ export default function SettingsPanel() {
           Manage your account preferences, security, and privacy settings
         </p>
       </div>
-
       <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
         {settingsSections.map((section) => (
           <SettingsCard key={section.id} section={section} />
         ))}
       </div>
-
-      {/* Quick Actions */}
+      {}
       <div className="mt-8 pt-6 border-t border-gray-200">
         <h3 className="text-lg font-semibold text-gray-900 mb-4">Quick Actions</h3>
         <div className="flex flex-wrap gap-4">

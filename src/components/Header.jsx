@@ -21,14 +21,12 @@ import CartIcon from "../components/ui/CartIcon";
 import { useAuth } from "../context/AuthContext";
 import { useCart } from "../context/CartContext";
 import { profileMenuItems } from "../common/profileMenuConfig";
-
 export default function Header({ 
   showBanner = true, 
   showSearchBar = true, 
   showCart = true,
   setActiveTab,
   isSidebarOpen = false,
-  // New props for listing page functionality
   showSortFilter = false,
   sortOption = "default",
   setSortOption = () => {},
@@ -40,59 +38,43 @@ export default function Header({
   searchQuery = "",
   setSearchQuery = () => {}
 }) {
-  // All hooks at the top - UNCONDITIONALLY
   const [menuOpen, setMenuOpen] = useState(false);
   const [profileDropdownOpen, setProfileDropdownOpen] = useState(false);
   const { user, handleLogout, isInitialized } = useAuth();
   const { cartItems } = useCart();
   const navigate = useNavigate();
   const location = useLocation();
-  
-  // Derived state
   const isProfilePage = location.pathname === '/profile';
   const currentTab = location.hash.replace('#', '') || 'profile';
   const isListingPage = location.pathname === '/products' || showSortFilter;
-
-  // Effects - ALL HOOKS MUST BE CALLED UNCONDITIONALLY
   useEffect(() => {
     if (isSidebarOpen && profileDropdownOpen) {
       setProfileDropdownOpen(false);
     }
   }, [isSidebarOpen, location.pathname, location.hash, profileDropdownOpen]);
-
-  // Handle search input change
   const handleSearchChange = (e) => {
     if (showSortFilter && setSearchQuery) {
       setSearchQuery(e.target.value);
     }
   };
-
-  // Handle search submission
   const handleSearchSubmit = (e) => {
     e.preventDefault();
     if (searchQuery.trim()) {
-      // If we're not on the listing page, navigate there with the search query
       if (location.pathname !== '/products') {
         navigate(`/products?search=${encodeURIComponent(searchQuery)}`);
       }
-      // If we're already on the listing page, the search will be handled by the page's useEffect
     }
   };
-
-  // Clear search input
   const handleClearSearch = () => {
     if (showSortFilter && setSearchQuery) {
       setSearchQuery("");
       if (location.pathname === '/products') {
-        // Update URL to remove search param
         const url = new URL(window.location);
         url.searchParams.delete('search');
         window.history.pushState({}, '', url);
       }
     }
   };
-
-  // Early return for loading state - AFTER ALL HOOKS
   if (!isInitialized) {
     return (
       <header className="bg-white text-[#6b7280] text-[13px] py-2">
@@ -108,7 +90,6 @@ export default function Header({
       </header>
     );
   }
-
   const handleLogoutClick = () => {
     if (window.confirm("Are you sure you want to logout?")) {
       handleLogout();
@@ -117,54 +98,39 @@ export default function Header({
       navigate("/");
     }
   };
-
   const getDisplayName = () => {
     if (!user) return "";
     const fullName = user.fullName || 
                     user.name || 
                     `${user.firstName || ''} ${user.lastName || ''}`.trim();
-    
     if (fullName && fullName !== " ") {
       const names = fullName.split(" ");
       const firstName = names[0] || "";
       const lastName = names[1] || "";
-
       if (firstName) {
         const formattedFirst = firstName.charAt(0).toUpperCase() + firstName.slice(1).toLowerCase();
         const lastInitial = lastName ? ` ${lastName.charAt(0).toUpperCase()}.` : "";
         return `${formattedFirst}${lastInitial}`;
       }
     }
-    
-    // Fallback to email username
     if (user.email) {
       return user.email.split('@')[0];
     }
-    
     return "User";
   };
-
   const getUserAvatar = () => {
     if (!user) return null;
-    
-    // Check if user has a valid profile image URL
     const profileImage = user.profileImageUrl?.includes("example") ? user.avatar : user.profileImageUrl;
-    // Return the profile image only if it exists and is not empty
     if (profileImage && profileImage.trim() !== "") {
       return profileImage;
     }
-    
-    // Fallback to default avatar image
     return avater;
   };
-
   const hasUserAvatar = () => {
     if (!user) return false;
     const profileImage = user.profileImageUrl || user.avatar;
     return profileImage && profileImage.trim() !== "";
   };
-
-  // Handle image error
   const handleImageError = (e) => {
     e.target.style.display = 'none';
     const fallback = e.target.nextSibling;
@@ -172,30 +138,21 @@ export default function Header({
       fallback.style.display = 'flex';
     }
   };
-
-  // Handle profile navigation from header
   const handleProfileNavigation = (tabId) => {
-    // Always update URL hash
     window.history.replaceState(null, '', `#${tabId}`);
-    
-    // If we have setActiveTab function, use it
     if (typeof setActiveTab === 'function') {
       setActiveTab(tabId);
     } else if (location.pathname !== '/profile') {
-      // If not on profile page and no setActiveTab, navigate to profile
       navigate(`/profile#${tabId}`, { 
         state: { activeTab: tabId }
       });
     }
-    
-    // Close menus if open
     setProfileDropdownOpen(false);
     setMenuOpen(false);
   };
-
   return (
     <header className="bg-white text-[#6b7280] text-[13px] py-2">
-      {/* Top Bar */}
+      {}
       <div
         className={`max-w-[95%] mx-auto px-2 sm:px-4 flex justify-between items-center pr-10 ${
           showBanner ? "block" : "hidden"
@@ -205,35 +162,30 @@ export default function Header({
           Welcome to worldwide Megamart!{" "}
           {user && <span className="text-blue-600 font-medium">{getDisplayName()}</span>}
         </div>
-
         <div className="hidden sm:flex items-center gap-6">
           <div className="flex items-center gap-2 hover:text-blue-600 cursor-pointer transition">
             <MapPin className="w-4 h-4 text-blue-400" />
             <span>Deliver to 423661</span>
           </div>
-
           <div className="flex items-center gap-2 hover:text-blue-600 cursor-pointer transition">
             <Truck className="w-4 h-4 text-blue-400" />
             <span>Track your order</span>
           </div>
-
           <div className="flex items-center gap-2 hover:text-blue-600 cursor-pointer transition">
             <BadgePercent className="w-4 h-4 text-blue-400" />
             <span>All Offers</span>
           </div>
         </div>
       </div>
-
-      {/* Main Header */}
+      {}
       <div className="bg-white px-4 sm:px-6 py-3 border-b border-slate-100">
         <div className="max-w-[95%] mx-auto flex items-center justify-between gap-6">
-          {/* Logo */}
+          {}
           <Link to="/" className="flex items-center gap-2">
             <ListFilter className="w-10 h-7 text-blue-500" />
             <div className="text-lg sm:text-xl font-extrabold text-blue-600">MegaMart</div>
           </Link>
-
-          {/* Search Bar (desktop only) */}
+          {}
           {showSearchBar && (
             <div className="hidden md:flex flex-1 ml-13">
               <form onSubmit={handleSearchSubmit} className="relative w-full max-w-[500px] mx-auto">
@@ -263,13 +215,12 @@ export default function Header({
               </form>
             </div>
           )}
-
-          {/* Right Section (desktop only) */}
+          {}
           <div className="hidden md:flex items-center gap-3 text-sm text-slate-600">
-            {/* Sort & Filter Controls for Listing Page */}
+            {}
             {showSortFilter && (
               <>
-                {/* Mobile Filter Button */}
+                {}
                 <button
                   onClick={() => setShowFilters(!showFilters)}
                   className="lg:hidden p-2 rounded-lg hover:bg-gray-100 transition relative"
@@ -282,8 +233,7 @@ export default function Header({
                     </span>
                   )}
                 </button>
-
-                {/* Sort Dropdown */}
+                {}
                 <select
                   value={sortOption}
                   onChange={(e) => setSortOption(e.target.value)}
@@ -299,7 +249,6 @@ export default function Header({
                 </select>
               </>
             )}
-
             {!user ? (
               <Link
                 to="/login"
@@ -310,7 +259,7 @@ export default function Header({
               </Link>
             ) : (
               <div className="flex items-center gap-3">
-                {/* Profile Dropdown */}
+                {}
                 <div className="relative">
                   <button
                     type="button"
@@ -318,7 +267,6 @@ export default function Header({
                       isProfilePage && isSidebarOpen ? 'cursor-default' : 'hover:bg-blue-50'
                     }`}
                     onClick={() => {
-                      // If on profile page and sidebar is open, do not open dropdown
                       if (isProfilePage && isSidebarOpen) return;
                       setProfileDropdownOpen((prev) => !prev);
                     }}
@@ -338,7 +286,7 @@ export default function Header({
                     </div>
                     <span className="font-medium">{getDisplayName()}</span>
                   </button>
-                  {/* Profile Dropdown Menu - click-based, disabled when profile sidebar is open */}
+                  {}
                   {!(isProfilePage && isSidebarOpen) && profileDropdownOpen && (
                     <div className="absolute top-full left-0 mt-1 w-56 bg-white rounded-lg shadow-lg border border-gray-200 transition-all duration-200 z-50">
                       <div className="py-2">
@@ -354,9 +302,7 @@ export default function Header({
                             <span>{label}</span>
                           </button>
                         ))}
-                        
                         <div className="border-t border-gray-100 my-1"></div>
-                        
                         <button
                           onClick={handleLogoutClick}
                           className="flex items-center gap-3 w-full px-4 py-2 text-left hover:bg-red-50 text-red-600 transition"
@@ -370,8 +316,7 @@ export default function Header({
                 </div>
               </div>
             )}
-            
-            {/* Cart + Checkout */}
+            {}
             {showCart && (
               <div className="flex items-center gap-3">
                 <CartIcon />
@@ -388,10 +333,9 @@ export default function Header({
               </div>
             )}
           </div>
-
-          {/* Mobile Section */}
+          {}
           <div className="flex items-center gap-4 md:hidden">
-            {/* Sort & Filter Controls for Listing Page - Mobile */}
+            {}
             {showSortFilter && (
               <>
                 <button
@@ -408,8 +352,7 @@ export default function Header({
                 </button>
               </>
             )}
-            
-            {/* Show Cart */}
+            {}
             {showCart && <CartIcon />}
             <button
               className="p-2 rounded-md border border-slate-200"
@@ -420,8 +363,7 @@ export default function Header({
             </button>
           </div>
         </div>
-
-        {/* Mobile Sort Bar for Listing Page */}
+        {}
         {showSortFilter && (
           <div className="md:hidden mt-3 flex items-center gap-2">
             <select
@@ -439,11 +381,10 @@ export default function Header({
             </select>
           </div>
         )}
-
-        {/* Mobile Menu */}
+        {}
         {menuOpen && (
           <div className="md:hidden mt-3 space-y-2 text-sm border-t pt-3">
-            {/* Mobile Search */}
+            {}
             {showSearchBar && (
               <div className="relative">
                 <Search className="absolute left-3 top-1/2 -translate-y-1/2 text-slate-400 w-4 h-4" />
@@ -469,8 +410,7 @@ export default function Header({
                 )}
               </div>
             )}
-
-            {/* Mobile Menu Links */}
+            {}
             {!user ? (
               <>
                 <Link
@@ -480,7 +420,6 @@ export default function Header({
                 >
                   <UserPlus className="w-4 h-4" /> Sign In
                 </Link>
-
                 <Link
                   to="/register"
                   className="flex items-center gap-2 px-3 py-2 rounded-md hover:bg-slate-50 w-full"
@@ -491,11 +430,10 @@ export default function Header({
               </>
             ) : (
               <>
-                {/* Profile Section Header */}
+                {}
                 <div className="px-3 py-2 text-xs font-semibold text-gray-500 uppercase tracking-wide">
                   Profile Menu
                 </div>
-
                 {profileMenuItems.map(({ id, label, icon: Icon }) => (
                   <button
                     key={id}
@@ -529,10 +467,8 @@ export default function Header({
                     )}
                   </button>
                 ))}
-
                 <div className="border-t border-gray-200 my-1"></div>
-
-                {/* Logout */}
+                {}
                 <button
                   onClick={handleLogoutClick}
                   className="flex items-center gap-2 px-3 py-2 rounded-md hover:bg-red-50 w-full text-red-600"

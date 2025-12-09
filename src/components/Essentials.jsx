@@ -1,6 +1,5 @@
 import { Link } from "react-router-dom";
 import { essentials } from "../data/data";
-
 export default function Essentials() {
   return (
     <section className="max-w-[95%] mx-auto px-4 sm:px-6 mt-8 mb-12">
@@ -16,7 +15,6 @@ export default function Essentials() {
           View All →
         </Link>
       </div>
-
       <div className="flex sm:grid sm:grid-cols-6 gap-4 overflow-x-auto px-1 -mx-1 hide-scrollbar">
         {essentials.map((essential, idx) => (
           <div

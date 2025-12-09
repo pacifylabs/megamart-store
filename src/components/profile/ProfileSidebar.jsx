@@ -2,53 +2,40 @@
 import { User, ShoppingBag, Heart, MapPin, Settings, CreditCard, LogOut } from "lucide-react";
 import { useAuth } from "../../context/AuthContext";
 import { profileMenuItems } from "../../common/profileMenuConfig";
-
 export default function ProfileSidebar({ activeTab, setActiveTab, showProfileInfo, onClose }) {
   const { user, logout } = useAuth();
-
   const menuItems = profileMenuItems.map(({ id, label, icon }) => ({ id, label, icon }));
-
   const handleTabClick = (tabId) => {
     if (tabId !== activeTab) {
-      // Update the active tab
       if (setActiveTab) {
         setActiveTab(tabId);
       }
-      // Update URL without causing a full page reload
       window.history.replaceState(null, '', `#${tabId}`);
-      
-      // Close sidebar on mobile after navigation
       if (onClose && window.innerWidth < 1024) {
         onClose();
       }
     }
   };
-
   const handleLogout = async () => {
     if (window.confirm("Are you sure you want to logout?")) {
       await logout();
     }
   };
-
   const getDisplayName = () => {
     if (!user) return "User";
     const fullName = user.fullName || user.name || `${user.firstName || ''} ${user.lastName || ''}`.trim();
-    
     if (fullName && fullName !== " ") {
       const names = fullName.split(" ");
       const firstName = names[0] || "";
       const lastName = names[1] || "";
-
       if (firstName) {
         const formattedFirst = firstName.charAt(0).toUpperCase() + firstName.slice(1).toLowerCase();
         const lastInitial = lastName ? ` ${lastName.charAt(0).toUpperCase()}.` : "";
         return `${formattedFirst}${lastInitial}`;
       }
     }
-    
     return user.email?.split('@')[0] || "User";
   };
-
   return (
     <aside className="bg-white rounded-xl border border-gray-200 p-6 h-fit sticky top-8">
       {showProfileInfo && user && (
@@ -73,7 +60,6 @@ export default function ProfileSidebar({ activeTab, setActiveTab, showProfileInf
           <p className="text-sm text-gray-600 truncate">{user.email}</p>
         </div>
       )}
-
       <nav className="space-y-1">
         {menuItems.map(({ id, label, icon: Icon }) => (
           <button
@@ -89,7 +75,6 @@ export default function ProfileSidebar({ activeTab, setActiveTab, showProfileInf
             <span className="text-left">{label}</span>
           </button>
         ))}
-
         <button
           onClick={handleLogout}
           className="w-full flex items-center gap-3 px-4 py-3 text-red-600 hover:bg-red-50 rounded-lg font-medium mt-4 transition-all"
@@ -98,8 +83,7 @@ export default function ProfileSidebar({ activeTab, setActiveTab, showProfileInf
           <span className="text-left">Logout</span>
         </button>
       </nav>
-
-      {/* Close button for mobile */}
+      {}
       {onClose && (
         <button
           onClick={onClose}

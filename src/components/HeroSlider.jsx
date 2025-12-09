@@ -3,7 +3,6 @@ import { Swiper, SwiperSlide } from "swiper/react";
 import { Navigation, Pagination, Autoplay } from "swiper/modules";
 import { ChevronLeft, ChevronRight } from "lucide-react";
 import { heroSlides } from "../data/data";
-
 export default function HeroSlider() {
   return (
     <div className="relative px-4 sm:px-6 py-6">
@@ -42,14 +41,14 @@ export default function HeroSlider() {
             </SwiperSlide>
           ))}
         </Swiper>
-        {/* left arrow */}
+        {}
         <button
           className="hero-prev absolute -left-5 top-1/2 -translate-y-1/2 rounded-full bg-gray-400 outline-5 outline-white
               p-2 sm:p-3 shadow-md z-19 hidden sm:block  cursor-pointer"
         >
           <ChevronLeft className="w-6 h-6 text-slate-600" />
         </button>
-        {/* right arrow */}
+        {}
         <button
           className="hero-next absolute -right-5 top-1/2 -translate-y-1/2 rounded-full bg-gray-400 outline-5 outline-white
               p-2 sm:p-3 shadow-md z-99 hidden sm:grid cursor-pointer"

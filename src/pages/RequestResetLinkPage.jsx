@@ -2,28 +2,22 @@ import { useState } from "react";
 import { Link, useNavigate } from "react-router-dom";
 import { ListFilter, Mail, ArrowLeft, CheckCircle } from "lucide-react";
 import API from "../utils/api-axios";
-
 export default function RequestResetLinkPage() {
   const [email, setEmail] = useState("");
   const [loading, setLoading] = useState(false);
   const [success, setSuccess] = useState(false);
   const [error, setError] = useState("");
   const navigate = useNavigate();
-
   const handleEmailSubmit = async (e) => {
     e.preventDefault();
     setLoading(true);
     setError("");
-
-    // Basic email validation
     if (!email || !/\S+@\S+\.\S+/.test(email)) {
       setError("Please enter a valid email address");
       setLoading(false);
       return;
     }
-
     try {
-      // Call the API to send password reset email
       await API.post('/auth/request/reset-link', null, { params: { email } });
       setSuccess(true);
     } catch (err) {
@@ -45,10 +39,9 @@ export default function RequestResetLinkPage() {
       setLoading(false);
     }
   };
-
   return (
     <div className="min-h-screen bg-gray-50 flex flex-col">
-      {/* Header */}
+      {}
       <div className="bg-white px-4 sm:px-6 py-3 border-b border-slate-100">
         <div className="max-w-[95%] mx-auto">
           <Link to="/" className="flex items-center gap-2 w-fit">
@@ -59,12 +52,11 @@ export default function RequestResetLinkPage() {
           </Link>
         </div>
       </div>
-
-      {/* Forgot Password Form */}
+      {}
       <div className="flex-1 flex items-center justify-center px-4 py-12">
         <div className="w-full max-w-md">
           <div className="bg-white rounded-2xl shadow-lg border border-gray-200 p-8">
-            {/* Back Button */}
+            {}
             <button
               onClick={() => navigate("/login")}
               className="flex items-center gap-2 text-gray-600 hover:text-gray-800 mb-6 transition"
@@ -72,9 +64,7 @@ export default function RequestResetLinkPage() {
               <ArrowLeft className="w-4 h-4" />
               <span className="text-sm font-medium">Back to Login</span>
             </button>
-
             {success ? (
-              // Success Message
               <div className="text-center">
                 <div className="bg-green-100 w-16 h-16 rounded-full flex items-center justify-center mx-auto mb-4">
                   <CheckCircle className="w-8 h-8 text-green-600" />
@@ -94,7 +84,6 @@ export default function RequestResetLinkPage() {
                 </button>
               </div>
             ) : (
-              // Email Input Form
               <>
                 <div className="text-center mb-8">
                   <div className="bg-blue-100 w-16 h-16 rounded-full flex items-center justify-center mx-auto mb-4">
@@ -105,13 +94,11 @@ export default function RequestResetLinkPage() {
                     Enter your email address and we'll send you a password reset link
                   </p>
                 </div>
-
                 {error && (
                   <div className="mb-4 p-3 bg-red-50 border border-red-200 rounded-lg text-red-600 text-sm">
                     {error}
                   </div>
                 )}
-
                 <form onSubmit={handleEmailSubmit} className="space-y-4">
                   <div>
                     <label className="block text-sm font-medium text-gray-700 mb-2">
@@ -130,7 +117,6 @@ export default function RequestResetLinkPage() {
                       />
                     </div>
                   </div>
-
                   <button
                     type="submit"
                     disabled={loading}
@@ -139,8 +125,7 @@ export default function RequestResetLinkPage() {
                     {loading ? 'Sending...' : 'Request Reset Link'}
                   </button>
                 </form>
-
-                {/* Security Tips */}
+                {}
                 <div className="mt-6 p-4 bg-blue-50 rounded-lg">
                   <h3 className="text-sm font-semibold text-blue-800 mb-2">💡 Security Tips</h3>
                   <ul className="text-xs text-blue-700 space-y-1">

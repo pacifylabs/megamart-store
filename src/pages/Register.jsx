@@ -2,7 +2,6 @@ import { Link, useNavigate } from "react-router-dom";
 import { useState } from "react";
 import { signup } from "../services/authServices";
 import { ListFilter, Mail, Lock, User, Eye, EyeOff, ArrowLeft } from "lucide-react";
-
 function RegisterPage() {
   const [form, setForm] = useState({
     fullName: "",
@@ -10,7 +9,6 @@ function RegisterPage() {
     password: "",
     confirmPassword: "",
   });
-
   const [errors, setErrors] = useState({});
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
@@ -18,37 +16,27 @@ function RegisterPage() {
   const [error, setError] = useState("");
   const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
-
   const handleChange = (e) => {
     const { name, value } = e.target;
     setForm((prev) => ({ ...prev, [name]: value }));
-    // Clear error when user starts typing
     if (errors[name]) {
       setErrors(prev => ({ ...prev, [name]: "" }));
     }
     if (error) setError("");
     if (message) setMessage("");
   };
-
-  // Enhanced client-side validation
   const validate = () => {
     let newErrors = {};
-    
-    // Name validation
     if (!form.fullName.trim()) {
       newErrors.fullName = "Full name is required";
     } else if (form.fullName.trim().length < 2) {
       newErrors.fullName = "Full name must be at least 2 characters";
     }
-
-    // Email validation
     if (!form.email.trim()) {
       newErrors.email = "Email is required";
     } else if (!/^[^\s@]+@[^\s@]+\.[^\s@]+$/.test(form.email)) {
       newErrors.email = "Please enter a valid email address";
     }
-
-    // Password validation
     if (!form.password) {
       newErrors.password = "Password is required";
     } else if (form.password.length < 6) {
@@ -56,44 +44,34 @@ function RegisterPage() {
     } else if (!/(?=.*[a-zA-Z])(?=.*\d)/.test(form.password)) {
       newErrors.password = "Password must contain letters and numbers";
     }
-
-    // Confirm password validation
     if (!form.confirmPassword) {
       newErrors.confirmPassword = "Please confirm your password";
     } else if (form.confirmPassword !== form.password) {
       newErrors.confirmPassword = "Passwords do not match";
     }
-
     setErrors(newErrors);
     return Object.keys(newErrors).length === 0;
   };
-
   const handleSubmit = async (e) => {
     e.preventDefault();
     setError("");
     setMessage("");
     setLoading(true);
-
     if (!validate()) {
       setLoading(false);
       return;
     }
-
     const payload = {
       fullName: form.fullName.trim(),
       email: form.email.trim().toLowerCase(),
       password: form.password,
     };
-
     try {
       const { data, status } = await signup(payload);
-      
       if (status === 200 || status === 201) {
         const message = data.message || "Registration successful!";
         setMessage(message);
         setForm({ fullName: "", email: "", password: "", confirmPassword: "" });
-        
-        // Auto-redirect to login after 3 seconds
         setTimeout(() => {
           navigate("/login");
         }, 3000);
@@ -103,8 +81,6 @@ function RegisterPage() {
                           err.response?.data?.error || 
                           "Registration failed. Please try again.";
       setError(errorMessage);
-      
-      // Set specific field errors from API response if available
       if (err.response?.data?.errors) {
         const apiErrors = err.response.data.errors;
         setErrors(prev => ({
@@ -116,14 +92,12 @@ function RegisterPage() {
       setLoading(false);
     }
   };
-
   const handleBackToHome = () => {
     navigate("/");
   };
-
   return (
     <div className="min-h-screen bg-gray-50 flex flex-col">
-      {/* Header */}
+      {}
       <div className="bg-white px-4 sm:px-6 py-3 border-b border-slate-100">
         <div className="max-w-[95%] mx-auto">
           <div className="flex items-center justify-between">
@@ -143,8 +117,7 @@ function RegisterPage() {
           </div>
         </div>
       </div>
-
-      {/* Register Form */}
+      {}
       <div className="flex-1 flex items-center justify-center px-4 py-8">
         <div className="w-full max-w-md">
           <div className="bg-white rounded-2xl shadow-lg border border-gray-200 p-8">
@@ -159,14 +132,12 @@ function RegisterPage() {
                 Join MegaMart and start shopping fresh
               </p>
             </div>
-
             {error && (
               <div className="mb-4 p-3 bg-red-50 border border-red-200 rounded-lg text-red-600 text-sm flex items-center gap-2">
                 <span className="font-medium">❌</span>
                 <span>{error}</span>
               </div>
             )}
-
             {message && (
               <div className="mb-4 p-3 bg-green-50 border border-green-200 rounded-lg text-green-600 text-sm flex items-center gap-2">
                 <span className="font-medium">✅</span>
@@ -176,9 +147,8 @@ function RegisterPage() {
                 )}
               </div>
             )}
-
             <form onSubmit={handleSubmit} className="space-y-5">
-              {/* Full Name Field */}
+              {}
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-2">
                   Full Name
@@ -206,8 +176,7 @@ function RegisterPage() {
                   </p>
                 )}
               </div>
-
-              {/* Email Field */}
+              {}
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-2">
                   Email Address
@@ -235,8 +204,7 @@ function RegisterPage() {
                   </p>
                 )}
               </div>
-
-              {/* Password Field */}
+              {}
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-2">
                   Password
@@ -279,8 +247,7 @@ function RegisterPage() {
                   Must be at least 6 characters with letters and numbers
                 </p>
               </div>
-
-              {/* Confirm Password Field */}
+              {}
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-2">
                   Confirm Password
@@ -320,8 +287,7 @@ function RegisterPage() {
                   </p>
                 )}
               </div>
-
-              {/* Submit Button */}
+              {}
               <button
                 type="submit"
                 disabled={loading}
@@ -356,7 +322,6 @@ function RegisterPage() {
                 )}
               </button>
             </form>
-
             <div className="mt-6 text-center">
               <p className="text-sm text-gray-600">
                 Already have an account?{" "}
@@ -368,8 +333,7 @@ function RegisterPage() {
                 </Link>
               </p>
             </div>
-
-            {/* Terms Notice */}
+            {}
             <div className="mt-4 text-center">
               <p className="text-xs text-gray-500">
                 By creating an account, you agree to our{" "}
@@ -388,5 +352,4 @@ function RegisterPage() {
     </div>
   );
 }
-
 export default RegisterPage;

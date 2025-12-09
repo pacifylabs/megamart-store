@@ -1,18 +1,12 @@
 import { createContext, useContext, useEffect, useState } from "react";
 import { useAuth } from "./AuthContext";
-
 const CartContext = createContext();
-
 export function CartProvider({ children }) {
   const { user } = useAuth();
   const [cartItems, setCartItems] = useState([]);
-
-  // Generate user-specific localStorage key
   const getCartKey = () => {
     return user?.id ? `megamart-cart-${user.id}` : 'megamart-cart-guest';
   };
-
-  // Load cart items from localStorage when user changes
   useEffect(() => {
     if (user === undefined) return;
     try {
@@ -24,11 +18,8 @@ export function CartProvider({ children }) {
       setCartItems([]);
     }
   }, [user]);
-
-  // Save to localStorage whenever cartItems changes
   useEffect(() => {
-    if (user === undefined) return; // Don't save until auth is initialized
-
+    if (user === undefined) return;
     try {
       const cartKey = getCartKey();
       localStorage.setItem(cartKey, JSON.stringify(cartItems));
@@ -36,7 +27,6 @@ export function CartProvider({ children }) {
       console.error('Error saving cart to localStorage:', error);
     }
   }, [cartItems, user]);
-
   const addToCart = (product) => {
     setCartItems((prev) => {
       const existing = prev.find((item) => item.id === product.id);
@@ -50,11 +40,9 @@ export function CartProvider({ children }) {
       return [...prev, { ...product, qty: product.quantity || 1 }];
     });
   };
-
   const removeFromCart = (id) => {
     setCartItems((prev) => prev.filter((item) => item.id !== id));
   };
-
   const updateQty = (id, type) => {
     setCartItems((prev) =>
       prev.map((item) =>
@@ -67,7 +55,6 @@ export function CartProvider({ children }) {
       )
     );
   };
-
   const clearCart = () => {
     setCartItems([]);
     try {
@@ -77,24 +64,18 @@ export function CartProvider({ children }) {
       console.error('Error clearing cart from localStorage:', error);
     }
   };
-
-  // Clear cart when user logs out
   useEffect(() => {
     if (user === null) {
-      // User logged out, clear cart
       setCartItems([]);
     }
   }, [user]);
-
   const cartCount = cartItems.reduce((acc, item) => acc + item.qty, 0);
-
   const cartTotal = cartItems.reduce((acc, item) => {
     const price = typeof item.price === "string"
       ? parseInt(item.price.replace(/[^\d]/g, ""))
       : item.price;
     return acc + (price * item.qty);
   }, 0);
-
   return (
     <CartContext.Provider
       value={{
@@ -111,7 +92,6 @@ export function CartProvider({ children }) {
     </CartContext.Provider>
   );
 }
-
 export function useCart() {
   return useContext(CartContext);
 }

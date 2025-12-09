@@ -5,7 +5,6 @@ import { essential, phones } from "../data/data";
 import { ListFilter, ArrowLeft } from "lucide-react";
 import CartIcon from "../components/ui/CartIcon";
 import Header from "../components/Header";
-
 export default function ProductDetailsPage() {
   const { id } = useParams();
   const location = useLocation();
@@ -15,7 +14,6 @@ export default function ProductDetailsPage() {
   const [selectedSize, setSelectedSize] = useState(null);
   const [activeTab, setActiveTab] = useState("description");
   const [product, setProduct] = useState(null);
-
   useEffect(() => {
     if (location.state?.product) {
       setProduct(location.state.product);
@@ -31,29 +29,9 @@ export default function ProductDetailsPage() {
       }
     }
   }, [id, location.state, navigate]);
-
   const handleIncrement = () => setQuantity((prev) => prev + 1);
   const handleDecrement = () => setQuantity((prev) => (prev > 1 ? prev - 1 : 1));
-
   const handleAddToCart = () => {
-    addToCart({
-      id: product.id,
-      name: product.name,
-      price:
-        typeof product.price === "string"
-          ? parseInt(product.price.replace(/[^\d]/g, ""))
-          : product.price,
-      img: product.image || product.img,
-      size: selectedSize,
-      quantity: quantity, // Send the selected quantity
-    });
-    
-    // Optional: Show success message
-    alert(`${quantity} item(s) added to cart!`);
-  };
-
-  const handleBuyNow = () => {
-    // Add to cart first
     addToCart({
       id: product.id,
       name: product.name,
@@ -65,18 +43,28 @@ export default function ProductDetailsPage() {
       size: selectedSize,
       quantity: quantity,
     });
-    
-    // Navigate to checkout
+    alert(`${quantity} item(s) added to cart!`);
+  };
+  const handleBuyNow = () => {
+    addToCart({
+      id: product.id,
+      name: product.name,
+      price:
+        typeof product.price === "string"
+          ? parseInt(product.price.replace(/[^\d]/g, ""))
+          : product.price,
+      img: product.image || product.img,
+      size: selectedSize,
+      quantity: quantity,
+    });
     navigate("/checkout");
   };
-
   const handleChatSeller = () => {
     const message = `Hi, I'm interested in: ${product.name}\nPrice: ${product.price}\nQuantity: ${quantity}`;
-    const whatsappNumber = "2348012345678"; // Replace with actual seller number
+    const whatsappNumber = "2348012345678";
     const whatsappUrl = `https://wa.me/${whatsappNumber}?text=${encodeURIComponent(message)}`;
     window.open(whatsappUrl, "_blank");
   };
-
   if (!product) {
     return (
       <div className="min-h-screen flex items-center justify-center">
@@ -84,14 +72,12 @@ export default function ProductDetailsPage() {
       </div>
     );
   }
-
   return (
     <div className="min-h-screen bg-gray-50">
       <Header showBanner={false} showSearchBar={false} showCart={true}/>
-
-      {/* Content */}
+      {}
       <div className="max-w-[95%] mx-auto px-4 py-6 sm:py-8">
-        {/* Back Button */}
+        {}
         <button
           onClick={() => navigate(-1)}
           className="mb-6 flex items-center gap-2 text-blue-600 hover:text-blue-800 transition"
@@ -99,9 +85,8 @@ export default function ProductDetailsPage() {
           <ArrowLeft className="w-4 h-4" />
           <span className="text-sm font-medium">Back</span>
         </button>
-
         <div className="grid grid-cols-1 md:grid-cols-2 gap-8">
-          {/* Product Image Section */}
+          {}
           <div className="bg-white rounded-lg border border-gray-200 p-8 flex items-center justify-center">
             <img
               src={product.image || product.img}
@@ -109,10 +94,9 @@ export default function ProductDetailsPage() {
               className="max-w-full h-auto object-contain max-h-96"
             />
           </div>
-
-          {/* Product Information Section */}
+          {}
           <div className="flex flex-col gap-4">
-            {/* Brand and Model */}
+            {}
             <div className="text-sm text-gray-600">
               <p>
                 <span className="font-semibold">Brand:</span>{" "}
@@ -126,13 +110,11 @@ export default function ProductDetailsPage() {
                 Availability: {product.stock > 0 ? "In Stock" : "Out of Stock"}
               </p>
             </div>
-
-            {/* Product Title */}
+            {}
             <h1 className="text-2xl md:text-3xl font-bold text-gray-900">
               {product.name}
             </h1>
-
-            {/* Rating */}
+            {}
             <div className="flex items-center gap-2">
               <div className="flex text-orange-400">
                 {"★★★★☆".split("").map((star, i) => (
@@ -141,8 +123,7 @@ export default function ProductDetailsPage() {
               </div>
               <span className="text-sm text-gray-600">(4.0)</span>
             </div>
-
-            {/* Features */}
+            {}
             {product.features && Array.isArray(product.features) && (
               <ul className="space-y-2 bg-blue-50 p-4 rounded-lg">
                 {product.features.map((feature, index) => (
@@ -153,8 +134,7 @@ export default function ProductDetailsPage() {
                 ))}
               </ul>
             )}
-
-            {/* Size Options */}
+            {}
             {product.sizes && product.sizes.length > 0 && (
               <div className="space-y-2">
                 <p className="text-sm font-semibold">Select Size:</p>
@@ -175,8 +155,7 @@ export default function ProductDetailsPage() {
                 </div>
               </div>
             )}
-
-            {/* Price Section */}
+            {}
             <div className="border-t border-b py-4">
               <div className="flex items-center gap-3">
                 <span className="text-3xl font-bold text-gray-900">
@@ -194,8 +173,7 @@ export default function ProductDetailsPage() {
                 </p>
               )}
             </div>
-
-            {/* Quantity Selector and Buttons */}
+            {}
             <div className="flex flex-col gap-3">
               <div className="flex items-center border border-gray-300 rounded w-fit">
                 <button
@@ -217,7 +195,6 @@ export default function ProductDetailsPage() {
                   +
                 </button>
               </div>
-
               <div className="flex flex-col sm:flex-row gap-3">
                 <button 
                   onClick={handleBuyNow}
@@ -225,7 +202,6 @@ export default function ProductDetailsPage() {
                 >
                   Buy Now
                 </button>
-
                 <button
                   onClick={handleAddToCart}
                   className="flex-1 bg-white text-orange-600 border-2 border-orange-600 px-6 py-3 rounded hover:bg-orange-50 transition font-semibold"
@@ -233,7 +209,6 @@ export default function ProductDetailsPage() {
                   Add to Cart
                 </button>
               </div>
-
               <button
                 onClick={handleChatSeller}
                 className="w-full bg-green-600 text-white px-6 py-3 rounded hover:bg-green-700 transition font-semibold flex items-center justify-center gap-2"
@@ -246,8 +221,7 @@ export default function ProductDetailsPage() {
             </div>
           </div>
         </div>
-
-        {/* Tabs Section */}
+        {}
         <div className="mt-12 bg-white rounded-lg border border-gray-200 p-6">
           <div className="border-b border-gray-300">
             <div className="flex gap-8">
@@ -283,15 +257,12 @@ export default function ProductDetailsPage() {
               </button>
             </div>
           </div>
-
           <div className="py-6">
             {activeTab === "description" && (
               <div className="text-gray-700 space-y-4">
                 <p>
                   {product.description}.
-                    
                   {` This ${product.name} is one of the best products in its category. It offers exceptional quality and value for money.`}
-
                 </p>
                 {product.subCategory?.description && (
                   <p className="text-sm text-gray-600">{product.subCategory?.description}</p>
@@ -304,7 +275,6 @@ export default function ProductDetailsPage() {
                   <tbody>
                     {product.specification && typeof product.specification === 'object' ? (
                       Object.entries(product.specification).map(([key, value]) => {
-                        // Skip if the value is an object or array to prevent the error
                         if (typeof value === 'object' && value !== null) {
                           return null;
                         }

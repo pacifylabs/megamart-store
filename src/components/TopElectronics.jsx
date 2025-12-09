@@ -3,7 +3,6 @@ import { Swiper, SwiperSlide } from "swiper/react";
 import { Navigation, Pagination, Autoplay } from "swiper/modules";
 import { ChevronLeft, ChevronRight } from "lucide-react";
 import { brandSlides } from "../data/data";
-
 import "swiper/css";
 import "swiper/css/navigation";
 import "swiper/css/pagination";
@@ -22,7 +21,6 @@ export default function TopElectronics() {
           View All →
         </Link>
       </div>
-
       <Swiper
         modules={[Pagination, Autoplay]}
         slidesPerView={1}

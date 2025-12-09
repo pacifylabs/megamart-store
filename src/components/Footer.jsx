@@ -2,12 +2,11 @@ import React from "react";
 import appstore from "../assets/appstore.svg";
 import googleplay from "../assets/googleplay.png";
 import { mostPopularCategories, customerServices } from "../data/data";
-
 export default function Footer() {
   return (
     <footer className="bg-blue-500 text-white py-10 px-6">
       <div className="max-w-full mx-auto grid grid-cols-1 md:grid-cols-3 gap-10 px-4 sm:px-6">
-        {/* Column 1 */}
+        {}
         <div>
           <h3 className="text-xl font-bold mb-6">MegaMart</h3>
           <div className="mb-4">
@@ -25,7 +24,6 @@ export default function Footer() {
               </a>
             </p>
           </div>
-
           <div>
             <h4 className="font-semibold mb-2">Download App</h4>
             <div className="flex space-x-4">
@@ -38,8 +36,7 @@ export default function Footer() {
             </div>
           </div>
         </div>
-
-        {/* Column 2 */}
+        {}
         <div>
           <h3 className="text-xl font-semibold mb-4 pb-2 border-b-2 border-white">
             Most Popular Categories
@@ -52,8 +49,7 @@ export default function Footer() {
             ))}
           </ul>
         </div>
-
-        {/* Column 3 */}
+        {}
         <div>
           <h3 className="text-xl font-semibold mb-4 pb-2 border-b-2 border-white">
             Customer Services
@@ -67,7 +63,6 @@ export default function Footer() {
           </ul>
         </div>
       </div>
-
       <div className="mt-8 text-center text-sm opacity-75">
         © {new Date().getFullYear()} All rights reserved. Reliance Retail Ltd.
       </div>

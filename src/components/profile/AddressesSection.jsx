@@ -2,17 +2,6 @@
 import React, { useState, useEffect } from "react";
 import { Plus, Edit, Trash2, MapPin, Loader, Check } from "lucide-react";
 import { Link } from "react-router-dom";
-
-/**
- * Addresses Section - Updated with better UI and API integration
- * API Endpoints:
- * - GET /user/addresses
- * - POST /user/addresses
- * - PATCH /user/addresses/:id
- * - DELETE /user/addresses/:id
- */
-
-// Mock data - Replace with API call
 const mockAddresses = [
   { 
     id: 1, 
@@ -37,8 +26,6 @@ const mockAddresses = [
     isDefault: false 
   },
 ];
-
-// Address Form Component
 const AddressForm = ({ address, onSave, onCancel, isEditing }) => {
   const [formData, setFormData] = useState({
     label: address?.label || '',
@@ -50,9 +37,7 @@ const AddressForm = ({ address, onSave, onCancel, isEditing }) => {
     phone: address?.phone || '',
     isDefault: address?.isDefault || false
   });
-
   const [loading, setLoading] = useState(false);
-
   const handleSubmit = async (e) => {
     e.preventDefault();
     setLoading(true);
@@ -64,13 +49,11 @@ const AddressForm = ({ address, onSave, onCancel, isEditing }) => {
       setLoading(false);
     }
   };
-
   return (
     <form onSubmit={handleSubmit} className="bg-blue-50 border border-blue-200 rounded-xl p-6 space-y-4">
       <h4 className="font-semibold text-gray-900">
         {isEditing ? 'Edit Address' : 'Add New Address'}
       </h4>
-      
       <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
         <div>
           <label className="block text-sm font-medium text-gray-700 mb-1">
@@ -86,7 +69,6 @@ const AddressForm = ({ address, onSave, onCancel, isEditing }) => {
             disabled={loading}
           />
         </div>
-
         <div>
           <label className="block text-sm font-medium text-gray-700 mb-1">
             Phone Number *
@@ -101,7 +83,6 @@ const AddressForm = ({ address, onSave, onCancel, isEditing }) => {
             disabled={loading}
           />
         </div>
-
         <div className="md:col-span-2">
           <label className="block text-sm font-medium text-gray-700 mb-1">
             Address Line *
@@ -116,7 +97,6 @@ const AddressForm = ({ address, onSave, onCancel, isEditing }) => {
             disabled={loading}
           />
         </div>
-
         <div>
           <label className="block text-sm font-medium text-gray-700 mb-1">
             City *
@@ -131,7 +111,6 @@ const AddressForm = ({ address, onSave, onCancel, isEditing }) => {
             disabled={loading}
           />
         </div>
-
         <div>
           <label className="block text-sm font-medium text-gray-700 mb-1">
             State *
@@ -146,7 +125,6 @@ const AddressForm = ({ address, onSave, onCancel, isEditing }) => {
             disabled={loading}
           />
         </div>
-
         <div>
           <label className="block text-sm font-medium text-gray-700 mb-1">
             Postal Code *
@@ -161,7 +139,6 @@ const AddressForm = ({ address, onSave, onCancel, isEditing }) => {
             disabled={loading}
           />
         </div>
-
         <div>
           <label className="block text-sm font-medium text-gray-700 mb-1">
             Country *
@@ -177,7 +154,6 @@ const AddressForm = ({ address, onSave, onCancel, isEditing }) => {
           />
         </div>
       </div>
-
       <div className="flex items-center">
         <input
           type="checkbox"
@@ -191,7 +167,6 @@ const AddressForm = ({ address, onSave, onCancel, isEditing }) => {
           Set as default address
         </label>
       </div>
-
       <div className="flex gap-3 pt-2">
         <button
           type="submit"
@@ -213,8 +188,6 @@ const AddressForm = ({ address, onSave, onCancel, isEditing }) => {
     </form>
   );
 };
-
-// Address Item Component
 const AddressItem = ({ address, onEdit, onDelete, onSetDefault, loading }) => (
   <div className="flex flex-col md:flex-row md:items-start justify-between p-6 border border-gray-200 rounded-xl hover:border-gray-300 transition-colors">
     <div className="flex-1">
@@ -232,7 +205,6 @@ const AddressItem = ({ address, onEdit, onDelete, onSetDefault, loading }) => (
           </span>
         )}
       </div>
-      
       <div className="space-y-2 text-gray-600">
         <p className="text-sm">{address.line}</p>
         <p className="text-sm">
@@ -241,7 +213,6 @@ const AddressItem = ({ address, onEdit, onDelete, onSetDefault, loading }) => (
         <p className="text-sm font-medium">{address.phone}</p>
       </div>
     </div>
-    
     <div className="flex flex-col sm:flex-row gap-2 mt-4 md:mt-0 md:ml-6">
       {!address.isDefault && (
         <button
@@ -271,8 +242,6 @@ const AddressItem = ({ address, onEdit, onDelete, onSetDefault, loading }) => (
     </div>
   </div>
 );
-
-// Empty State
 const EmptyAddresses = ({ onAddNew, loading }) => (
   <div className="text-center py-12">
     <MapPin className="w-16 h-16 text-gray-300 mx-auto mb-4" />
@@ -288,8 +257,6 @@ const EmptyAddresses = ({ onAddNew, loading }) => (
     </button>
   </div>
 );
-
-// Main Component
 export default function AddressesSection() {
   const [addresses, setAddresses] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -297,20 +264,13 @@ export default function AddressesSection() {
   const [error, setError] = useState(null);
   const [editingAddress, setEditingAddress] = useState(null);
   const [showAddForm, setShowAddForm] = useState(false);
-
   useEffect(() => {
     loadAddresses();
   }, []);
-
   const loadAddresses = async () => {
     try {
       setLoading(true);
       setError(null);
-      
-      // TODO: Replace with API call
-      // const response = await addressAPI.getAddresses();
-      // setAddresses(response.data);
-      
       setTimeout(() => {
         setAddresses(mockAddresses);
         setLoading(false);
@@ -321,18 +281,14 @@ export default function AddressesSection() {
       setLoading(false);
     }
   };
-
   const handleAddAddress = async (addressData) => {
     try {
       setActionLoading(true);
       setError(null);
-      
-      // TODO: Replace with API call
       const newAddress = {
         id: Date.now(),
         ...addressData
       };
-      
       if (addressData.isDefault) {
         setAddresses(prev => 
           prev.map(addr => ({ ...addr, isDefault: false }))
@@ -341,7 +297,6 @@ export default function AddressesSection() {
       } else {
         setAddresses(prev => [...prev, newAddress]);
       }
-      
       setShowAddForm(false);
     } catch (err) {
       setError('Failed to add address');
@@ -349,17 +304,14 @@ export default function AddressesSection() {
       setActionLoading(false);
     }
   };
-
   const handleUpdateAddress = async (addressId, updates) => {
     try {
       setActionLoading(true);
       setError(null);
-      
       const updatedAddress = { id: addressId, ...updates };
       setAddresses(prev => prev.map(addr => 
         addr.id === addressId ? { ...addr, ...updatedAddress } : addr
       ));
-      
       setEditingAddress(null);
     } catch (err) {
       setError('Failed to update address');
@@ -367,14 +319,11 @@ export default function AddressesSection() {
       setActionLoading(false);
     }
   };
-
   const handleDeleteAddress = async (addressId) => {
     if (!window.confirm('Are you sure you want to delete this address?')) return;
-
     try {
       setActionLoading(true);
       setError(null);
-      
       setAddresses(prev => prev.filter(addr => addr.id !== addressId));
     } catch (err) {
       setError('Failed to delete address');
@@ -382,12 +331,10 @@ export default function AddressesSection() {
       setActionLoading(false);
     }
   };
-
   const handleSetDefault = async (addressId) => {
     try {
       setActionLoading(true);
       setError(null);
-      
       setAddresses(prev => 
         prev.map(addr => ({
           ...addr,
@@ -400,7 +347,6 @@ export default function AddressesSection() {
       setActionLoading(false);
     }
   };
-
   if (loading) {
     return (
       <div className="bg-white rounded-xl p-6">
@@ -415,7 +361,6 @@ export default function AddressesSection() {
       </div>
     );
   }
-
   return (
     <div className="bg-white rounded-xl p-6">
       <div className="flex flex-col sm:flex-row sm:items-center justify-between mb-6 gap-4">
@@ -423,7 +368,6 @@ export default function AddressesSection() {
           <h3 className="text-xl font-bold text-gray-900">Delivery Addresses</h3>
           <p className="text-gray-600 mt-1">Manage your delivery locations</p>
         </div>
-        
         <div className="flex items-center gap-4">
           {addresses.length > 0 && (
             <button
@@ -443,13 +387,11 @@ export default function AddressesSection() {
           </Link>
         </div>
       </div>
-
       {error && (
         <div className="mb-6 p-4 bg-yellow-50 border border-yellow-200 rounded-lg">
           <p className="text-yellow-700 text-sm">{error}</p>
         </div>
       )}
-
       {showAddForm && (
         <div className="mb-6">
           <AddressForm
@@ -459,7 +401,6 @@ export default function AddressesSection() {
           />
         </div>
       )}
-
       {editingAddress && (
         <div className="mb-6">
           <AddressForm
@@ -470,7 +411,6 @@ export default function AddressesSection() {
           />
         </div>
       )}
-
       {addresses.length === 0 && !showAddForm ? (
         <EmptyAddresses 
           onAddNew={() => setShowAddForm(true)} 

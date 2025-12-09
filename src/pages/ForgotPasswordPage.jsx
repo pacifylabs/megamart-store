@@ -2,7 +2,6 @@ import { useState, useEffect } from "react";
 import { useSearchParams, Link, useNavigate } from "react-router-dom";
 import { ListFilter, Lock, Eye, EyeOff, CheckCircle, AlertCircle, X } from "lucide-react";
 import API from "../utils/api-axios";
-
 export default function ResetPasswordPage() {
   const [searchParams] = useSearchParams();
   const token = searchParams.get("token");
@@ -21,44 +20,33 @@ export default function ResetPasswordPage() {
     label: "",
     color: "",
   });
-  
-  // Modal states
   const [showSuccessModal, setShowSuccessModal] = useState(false);
   const [showErrorModal, setShowErrorModal] = useState(false);
   const [modalError, setModalError] = useState("");
-
   useEffect(() => {
-    // Validate token exists
     if (!token) {
       setError("Invalid or missing reset token. Please request a new password reset link.");
     }
   }, [token]);
-
-  // Prevent body scroll when modal is open
   useEffect(() => {
     if (showSuccessModal || showErrorModal) {
       document.body.style.overflow = 'hidden';
     } else {
       document.body.style.overflow = 'unset';
     }
-
     return () => {
       document.body.style.overflow = 'unset';
     };
   }, [showSuccessModal, showErrorModal]);
-
-  // Password strength checker
   const checkPasswordStrength = (password) => {
     let score = 0;
     if (!password) return { score: 0, label: "", color: "" };
-
     if (password.length >= 8) score++;
     if (password.length >= 12) score++;
     if (/[a-z]/.test(password)) score++;
     if (/[A-Z]/.test(password)) score++;
     if (/[0-9]/.test(password)) score++;
     if (/[^a-zA-Z0-9]/.test(password)) score++;
-
     let label, color;
     if (score < 3) {
       label = "Weak";
@@ -70,13 +58,10 @@ export default function ResetPasswordPage() {
       label = "Strong";
       color = "bg-green-500";
     }
-
     return { score, label, color };
   };
-
   const validateForm = () => {
     const errors = {};
-
     if (!formData.newPassword) {
       errors.newPassword = "Password is required";
     } else if (formData.newPassword.length < 8) {
@@ -88,47 +73,36 @@ export default function ResetPasswordPage() {
     } else if (!/(?=.*[0-9])/.test(formData.newPassword)) {
       errors.newPassword = "Password must contain at least one number";
     }
-
     if (!formData.confirmPassword) {
       errors.confirmPassword = "Please confirm your password";
     } else if (formData.newPassword !== formData.confirmPassword) {
       errors.confirmPassword = "Passwords do not match";
     }
-
     setValidationErrors(errors);
     return Object.keys(errors).length === 0;
   };
-
   const handlePasswordChange = (e) => {
     const password = e.target.value;
     setFormData({ ...formData, newPassword: password });
     setPasswordStrength(checkPasswordStrength(password));
-    
     if (validationErrors.newPassword) {
       setValidationErrors({ ...validationErrors, newPassword: "" });
     }
   };
-
   const handleConfirmPasswordChange = (e) => {
     setFormData({ ...formData, confirmPassword: e.target.value });
-    
     if (validationErrors.confirmPassword) {
       setValidationErrors({ ...validationErrors, confirmPassword: "" });
     }
   };
-
   const handleSubmit = async (e) => {
     e.preventDefault();
     setError("");
-
     if (!validateForm()) {
       return;
     }
-
     setLoading(true);
-
     try {
-      
       const response = await API.patch(
         "/auth/forgot-password",
         { newPassword: formData.newPassword },
@@ -138,21 +112,15 @@ export default function ResetPasswordPage() {
           }
         }
       );
-
       setShowSuccessModal(true);
-      
-      // Clear form
       setFormData({
         newPassword: "",
         confirmPassword: "",
       });
-      
     } catch (err) {
       const errorMessage = err.response?.data?.message || 
                           err.response?.data?.error || 
                           "An error occurred. Please try again later.";
-      
-      // Show error modal
       setModalError(errorMessage);
       setShowErrorModal(true);
       setError(errorMessage);
@@ -160,9 +128,7 @@ export default function ResetPasswordPage() {
       setLoading(false);
     }
   };
-
   const handleRequestNewLink = () => {
-    // Reset the form and show a message that a new link has been requested
     setFormData({
       newPassword: "",
       confirmPassword: "",
@@ -171,23 +137,18 @@ export default function ResetPasswordPage() {
     setModalError("");
     setError("A new password reset link has been requested. Please check your email.");
   };
-
   const handleRetry = () => {
     setShowErrorModal(false);
     setModalError("");
     setError("");
   };
-
   const handleCloseSuccessModal = () => {
     setShowSuccessModal(false);
     navigate("/login");
   };
-
   const handleCloseErrorModal = () => {
     setShowErrorModal(false);
   };
-
-  // If no token, show error state
   if (!token) {
     return (
       <div className="min-h-screen bg-gray-50 flex flex-col">
@@ -201,7 +162,6 @@ export default function ResetPasswordPage() {
             </Link>
           </div>
         </div>
-
         <div className="flex-1 flex items-center justify-center px-4 py-12">
           <div className="w-full max-w-md">
             <div className="bg-white rounded-2xl shadow-lg border border-gray-200 p-8 text-center">
@@ -224,10 +184,9 @@ export default function ResetPasswordPage() {
       </div>
     );
   }
-
   return (
     <div className="min-h-screen bg-gray-50 flex flex-col">
-      {/* Header */}
+      {}
       <div className="bg-white px-4 sm:px-6 py-3 border-b border-slate-100">
         <div className="max-w-[95%] mx-auto">
           <Link to="/" className="flex items-center gap-2 w-fit">
@@ -238,12 +197,11 @@ export default function ResetPasswordPage() {
           </Link>
         </div>
       </div>
-
-      {/* Reset Password Form */}
+      {}
       <div className="flex-1 flex items-center justify-center px-4 py-12">
         <div className="w-full max-w-md">
           <div className="bg-white rounded-2xl shadow-lg border border-gray-200 p-8 relative">
-            {/* Success Modal */}
+            {}
             {showSuccessModal && (
               <div className="absolute inset-0 bg-white bg-opacity-95 rounded-2xl flex items-center justify-center z-10 p-6">
                 <div className="text-center w-full">
@@ -267,8 +225,7 @@ export default function ResetPasswordPage() {
                 </div>
               </div>
             )}
-
-            {/* Error Modal */}
+            {}
             {showErrorModal && (
               <div className="absolute inset-0 bg-white bg-opacity-95 rounded-2xl flex items-center justify-center z-10 p-6">
                 <div className="text-center w-full">
@@ -278,7 +235,6 @@ export default function ResetPasswordPage() {
                   >
                     <X className="w-6 h-6" />
                   </button>
-                  
                   <div className="bg-red-100 w-16 h-16 rounded-full flex items-center justify-center mx-auto mb-4">
                     <AlertCircle className="w-8 h-8 text-red-600" />
                   </div>
@@ -305,8 +261,7 @@ export default function ResetPasswordPage() {
                 </div>
               </div>
             )}
-
-            {/* Main Form Content */}
+            {}
             <div className={showSuccessModal || showErrorModal ? "opacity-30 pointer-events-none" : ""}>
               <div className="text-center mb-8">
                 <div className="bg-blue-100 w-16 h-16 rounded-full flex items-center justify-center mx-auto mb-4">
@@ -315,16 +270,14 @@ export default function ResetPasswordPage() {
                 <h1 className="text-3xl font-bold text-gray-900 mb-2">Reset Password</h1>
                 <p className="text-gray-600">Enter your new password below</p>
               </div>
-
               {error && !showErrorModal && (
                 <div className="mb-4 p-3 bg-red-50 border border-red-200 rounded-lg text-red-600 text-sm flex items-center gap-2">
                   <AlertCircle className="w-5 h-5 flex-shrink-0" />
                   <span>{error}</span>
                 </div>
               )}
-
               <form onSubmit={handleSubmit} className="space-y-5">
-                {/* New Password Field */}
+                {}
                 <div>
                   <label className="block text-sm font-medium text-gray-700 mb-2">
                     New Password
@@ -357,8 +310,7 @@ export default function ResetPasswordPage() {
                       )}
                     </button>
                   </div>
-
-                  {/* Password Strength Indicator */}
+                  {}
                   {formData.newPassword && (
                     <div className="mt-2">
                       <div className="flex items-center gap-2 mb-1">
@@ -378,15 +330,13 @@ export default function ResetPasswordPage() {
                       </div>
                     </div>
                   )}
-
                   {validationErrors.newPassword && (
                     <p className="mt-1 text-sm text-red-600 flex items-center gap-1">
                       <AlertCircle className="w-4 h-4" />
                       {validationErrors.newPassword}
                     </p>
                   )}
-
-                  {/* Password Requirements */}
+                  {}
                   <div className="mt-3 space-y-1">
                     <p className="text-xs text-gray-600 font-medium">Password must contain:</p>
                     <div className="space-y-1">
@@ -409,8 +359,7 @@ export default function ResetPasswordPage() {
                     </div>
                   </div>
                 </div>
-
-                {/* Confirm Password Field */}
+                {}
                 <div>
                   <label className="block text-sm font-medium text-gray-700 mb-2">
                     Confirm Password
@@ -443,15 +392,13 @@ export default function ResetPasswordPage() {
                       )}
                     </button>
                   </div>
-
                   {validationErrors.confirmPassword && (
                     <p className="mt-1 text-sm text-red-600 flex items-center gap-1">
                       <AlertCircle className="w-4 h-4" />
                       {validationErrors.confirmPassword}
                     </p>
                   )}
-
-                  {/* Password Match Indicator */}
+                  {}
                   {formData.confirmPassword && formData.newPassword === formData.confirmPassword && (
                     <div className="mt-2 flex items-center gap-2 text-green-600 text-sm">
                       <CheckCircle className="w-4 h-4" />
@@ -459,7 +406,6 @@ export default function ResetPasswordPage() {
                     </div>
                   )}
                 </div>
-
                 <button
                   type="submit"
                   disabled={loading}
@@ -501,8 +447,6 @@ export default function ResetPasswordPage() {
     </div>
   );
 }
-
-// Password Requirement Component
 function PasswordRequirement({ met, text }) {
   return (
     <div className="flex items-center gap-2 text-xs">

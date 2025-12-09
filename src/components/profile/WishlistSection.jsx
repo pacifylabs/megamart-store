@@ -2,7 +2,6 @@
 import React, { useState, useEffect } from "react";
 import { Heart, Eye, Trash2, Loader, ShoppingCart } from "lucide-react";
 import { Link } from "react-router-dom";
-
 const mockWishlist = [
   { 
     id: 1, 
@@ -23,11 +22,9 @@ const mockWishlist = [
     rating: 4.2
   },
 ];
-
-// Wishlist Item Component
 const WishlistItem = ({ item, onRemove, loading }) => (
   <div className="flex items-center gap-4 p-4 border border-gray-200 rounded-lg hover:border-gray-300 transition-colors">
-    {/* Product Image */}
+    {}
     <div className="w-16 h-16 bg-gray-100 rounded-lg flex items-center justify-center overflow-hidden">
       {item.image ? (
         <img 
@@ -44,8 +41,7 @@ const WishlistItem = ({ item, onRemove, loading }) => (
         <ShoppingCart className="w-6 h-6 text-gray-400" />
       </div>
     </div>
-
-    {/* Product Info */}
+    {}
     <div className="flex-1 min-w-0">
       <h4 className="font-medium text-gray-900 truncate">{item.title}</h4>
       <div className="flex items-center gap-2 mt-1">
@@ -66,8 +62,7 @@ const WishlistItem = ({ item, onRemove, loading }) => (
         </div>
       )}
     </div>
-
-    {/* Actions */}
+    {}
     <div className="flex items-center gap-2">
       <Link
         to={`/products/${item.productId}`}
@@ -87,8 +82,6 @@ const WishlistItem = ({ item, onRemove, loading }) => (
     </div>
   </div>
 );
-
-// Empty State
 const EmptyWishlist = () => (
   <div className="text-center py-8">
     <Heart className="w-16 h-16 text-gray-300 mx-auto mb-4" />
@@ -103,8 +96,6 @@ const EmptyWishlist = () => (
     </Link>
   </div>
 );
-
-// Loading Skeleton
 const WishlistSkeleton = () => (
   <div className="space-y-4">
     {[1, 2].map(i => (
@@ -121,8 +112,6 @@ const WishlistSkeleton = () => (
     ))}
   </div>
 );
-
-// Main Component
 export default function WishlistSection({ 
   maxDisplay = 2,
   showViewAll = true 
@@ -131,67 +120,35 @@ export default function WishlistSection({
   const [loading, setLoading] = useState(true);
   const [actionLoading, setActionLoading] = useState(false);
   const [error, setError] = useState(null);
-
   useEffect(() => {
     loadWishlist();
   }, []);
-
   const loadWishlist = async () => {
     try {
       setLoading(true);
       setError(null);
-      
-      // TODO: Uncomment when API is ready
-      // const result = await wishlistService.getWishlist();
-      
-      // if (result.success) {
-      //   setWishlist(result.data.wishlist || []);
-      // } else {
-      //   setError(result.error);
-      //   // Fallback to mock data
-      //   setWishlist(mockWishlist);
-      // }
-      
-      // Using mock data for now
       setTimeout(() => {
         setWishlist(mockWishlist);
         setLoading(false);
       }, 1000);
-      
     } catch (err) {
       setError("Failed to load wishlist");
       setLoading(false);
     }
   };
-
   const handleRemoveFromWishlist = async (productId) => {
     if (!window.confirm("Remove this item from your wishlist?")) return;
-
     try {
       setActionLoading(true);
-      
-      // TODO: Uncomment when API is ready
-      // const result = await wishlistService.removeFromWishlist(productId);
-      
-      // if (result.success) {
-      //   setWishlist(prev => prev.filter(item => item.productId !== productId));
-      // } else {
-      //   setError(result.error);
-      // }
-      
-      // Mock removal
       setWishlist(prev => prev.filter(item => item.productId !== productId));
-      
     } catch (err) {
       setError("Failed to remove item from wishlist");
     } finally {
       setActionLoading(false);
     }
   };
-
   const displayedWishlist = wishlist.slice(0, maxDisplay);
   const hasWishlistItems = displayedWishlist.length > 0;
-
   return (
     <div className="bg-white rounded-xl p-6">
       <div className="flex items-center justify-between mb-6">
@@ -201,13 +158,11 @@ export default function WishlistSection({
         </div>
         <Heart className="w-6 h-6 text-pink-500" />
       </div>
-
       {error && (
         <div className="mb-4 p-3 bg-yellow-50 border border-yellow-200 rounded-lg">
           <p className="text-yellow-700 text-sm">{error}</p>
         </div>
       )}
-
       {loading ? (
         <WishlistSkeleton />
       ) : hasWishlistItems ? (
@@ -222,7 +177,6 @@ export default function WishlistSection({
               />
             ))}
           </div>
-
           {showViewAll && wishlist.length > maxDisplay && (
             <div className="mt-6 pt-4 border-t border-gray-100">
               <Link

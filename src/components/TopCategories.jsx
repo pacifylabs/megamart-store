@@ -1,49 +1,33 @@
 import { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
 import API from "../utils/api-axios";
-
 export default function TopCategories() {
   const [categories, setCategories] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
-
-  // Fetch categories from API
   const fetchCategories = async () => {
     try {
       setLoading(true);
       setError(null);
-      
       const response = await API.get('/categories');
-      
-      // Process the API response to match the expected structure
       const categoriesData = response.data || [];
-      
-      // Filter active categories and transform to match the expected structure
       const activeCategories = categoriesData
         .filter(cat => cat.isActive !== false)
         .map(cat => ({
           id: cat._id || cat.id,
           name: cat.name,
           img: cat.image || cat.img || getDefaultCategoryImage(cat.name),
-          // Add any other properties you need
         }));
-
-      // Limit to top categories (you can adjust this logic)
-      const topCategories = activeCategories.slice(0, 8); // Show first 8 categories
-      
+      const topCategories = activeCategories.slice(0, 8);
       setCategories(topCategories);
-      
     } catch (err) {
       console.error("Error fetching categories:", err);
       setError("Failed to load categories");
-      // Fallback to empty array
       setCategories([]);
     } finally {
       setLoading(false);
     }
   };
-
-  // Helper function to get default category images based on category name
   const getDefaultCategoryImage = (categoryName) => {
     const defaultImages = {
       'Electronics': '/images/electronics.png',
@@ -54,17 +38,12 @@ export default function TopCategories() {
       'Beauty': '/images/beauty.png',
       'Toys': '/images/toys.png',
       'Automotive': '/images/automotive.png',
-      // Add more mappings as needed
     };
-    
     return defaultImages[categoryName] || '/images/default-category.png';
   };
-
   useEffect(() => {
     fetchCategories();
   }, []);
-
-  // Loading state
   if (loading) {
     return (
       <div className="max-w-[95%] mx-auto px-4 sm:px-6 mt-8">
@@ -75,9 +54,8 @@ export default function TopCategories() {
           </h3>
           <div className="text-blue-600 text-sm">View All →</div>
         </div>
-
         <div className="flex items-center gap-4 sm:gap-6 overflow-x-auto sm:overflow-x-hidden hide-scrollbar pb-3">
-          {/* Loading skeleton */}
+          {}
           {[...Array(8)].map((_, i) => (
             <div
               key={i}
@@ -93,8 +71,6 @@ export default function TopCategories() {
       </div>
     );
   }
-
-  // Error state
   if (error) {
     return (
       <div className="max-w-[95%] mx-auto px-4 sm:px-6 mt-8">
@@ -110,7 +86,6 @@ export default function TopCategories() {
             View All →
           </Link>
         </div>
-
         <div className="text-center py-8 text-gray-500">
           <p>Failed to load categories. Please try again later.</p>
           <button 
@@ -123,8 +98,6 @@ export default function TopCategories() {
       </div>
     );
   }
-
-  // Empty state
   if (categories.length === 0) {
     return (
       <div className="max-w-[95%] mx-auto px-4 sm:px-6 mt-8">
@@ -140,15 +113,12 @@ export default function TopCategories() {
             View All →
           </Link>
         </div>
-
         <div className="text-center py-8 text-gray-500">
           <p>No categories available at the moment.</p>
         </div>
       </div>
     );
   }
-
-  // Main render with categories
   return (
     <div className="max-w-[95%] mx-auto px-4 sm:px-6 mt-8">
       <div className="flex items-center justify-between mb-4">
@@ -163,7 +133,6 @@ export default function TopCategories() {
           View All →
         </Link>
       </div>
-
       <div className="flex items-center gap-4 sm:gap-6 overflow-x-auto sm:overflow-x-hidden hide-scrollbar pb-3">
         {categories.map((category) => (
           <Link
@@ -177,7 +146,6 @@ export default function TopCategories() {
                 alt={category.name}
                 className="w-10 h-10 sm:w-12 sm:h-12 object-contain group-hover:scale-110 transition-transform duration-300"
                 onError={(e) => {
-                  // Fallback if image fails to load
                   e.target.src = '/images/default-category.png';
                 }}
               />

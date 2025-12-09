@@ -3,23 +3,19 @@ import { ArrowLeft, ShoppingBag, Trash2, Plus, Minus, ListFilter } from "lucide-
 import { useNavigate, Link } from "react-router-dom";
 import { useCart } from "../context/CartContext";
 import Header from "../components/Header";
-
+import { CURRENCY_SIGN } from "../utils/api-axios";
 export default function Carts() {
   const navigate = useNavigate();
   const { cartItems, removeFromCart, updateQty } = useCart();
-
   const subtotal = cartItems.reduce((acc, item) => acc + item.price * item.qty, 0);
   const deliveryFee = 500;
   const total = subtotal + deliveryFee;
-
   return (
     <div className="min-h-screen bg-gray-50">
-      {/* Header */}
+      {}
       <Header showBanner={false} showSearchBar={false} showCart={true} />
-
       <div className="max-w-[95%] mx-auto px-4 py-6">
         {cartItems.length === 0 ? (
-          /* Empty Cart State */
           <div className="flex flex-col items-center justify-center py-16">
             <div className="bg-gray-100 p-8 rounded-full mb-6">
               <ShoppingBag className="w-16 h-16 text-gray-400" />
@@ -37,7 +33,7 @@ export default function Carts() {
           </div>
         ) : (
           <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-            {/* Cart Items Header */}
+            {}
             <div className="lg:col-span-3">
               <div className="flex gap-2 items-center py-2">
                 <button
@@ -51,8 +47,7 @@ export default function Carts() {
                 </h2>
               </div>
             </div>
-
-            {/* Cart Items List */}
+            {}
             <div className="lg:col-span-2 space-y-4">
               {cartItems.map((item) => (
                 <div
@@ -60,7 +55,7 @@ export default function Carts() {
                   className="bg-white rounded-xl p-4 shadow-sm border border-gray-200 hover:shadow-md transition"
                 >
                   <div className="flex gap-4">
-                    {/* Product Image */}
+                    {}
                     <div className="bg-gray-100 rounded-lg p-3 flex-shrink-0">
                       <img
                         src={item.img}
@@ -68,8 +63,7 @@ export default function Carts() {
                         className="w-20 h-20 sm:w-24 sm:h-24 object-contain"
                       />
                     </div>
-
-                    {/* Product Details */}
+                    {}
                     <div className="flex-1 min-w-0">
                       <div className="flex justify-between items-start mb-2">
                         <h3 className="text-sm sm:text-base font-semibold text-gray-900 line-clamp-2">
@@ -83,21 +77,18 @@ export default function Carts() {
                           <Trash2 className="w-4 h-4" />
                         </button>
                       </div>
-
                       {item.size && (
                         <p className="text-xs text-gray-500 mb-2">Size: {item.size}</p>
                       )}
-
                       <div className="flex items-center justify-between mt-3">
-                        {/* Price */}
+                        {}
                         <div>
-                          <p className="text-lg font-bold text-blue-600">₦{item.price}</p>
+                          <p className="text-lg font-bold text-blue-600">{CURRENCY_SIGN}{item.price}</p>
                           <p className="text-xs text-gray-500">
-                            Total: ₦{item.price * item.qty}
+                            Total: {CURRENCY_SIGN}{item.price * item.qty}
                           </p>
                         </div>
-
-                        {/* Quantity Controls */}
+                        {}
                         <div className="flex items-center gap-2 bg-gray-100 rounded-lg p-1">
                           <button
                             onClick={() => updateQty(item.id, "dec")}
@@ -123,44 +114,39 @@ export default function Carts() {
                 </div>
               ))}
             </div>
-
-            {/* Order Summary */}
+            {}
             <div className="lg:col-span-1">
               <div className="bg-white rounded-xl p-6 shadow-sm border border-gray-200 sticky top-24">
                 <h2 className="text-lg font-semibold text-gray-900 mb-4">Order Summary</h2>
-
                 <div className="space-y-3 mb-4">
                   <div className="flex justify-between text-sm">
                     <span className="text-gray-600">Subtotal</span>
-                    <span className="font-semibold text-gray-900">₦{subtotal}</span>
+                    <span className="font-semibold text-gray-900">{CURRENCY_SIGN}{subtotal}</span>
                   </div>
                   <div className="flex justify-between text-sm">
                     <span className="text-gray-600">Delivery Fee</span>
-                    <span className="font-semibold text-gray-900">₦{deliveryFee}</span>
+                    <span className="font-semibold text-gray-900">{CURRENCY_SIGN}{deliveryFee}</span>
                   </div>
                   <div className="pt-3 border-t border-gray-200">
                     <div className="flex justify-between">
                       <span className="text-base font-semibold text-gray-900">Total</span>
-                      <span className="text-xl font-bold text-blue-600">₦{total}</span>
+                      <span className="text-xl font-bold text-blue-600">{CURRENCY_SIGN}{total}</span>
                     </div>
                   </div>
                 </div>
-
                 <button
                   onClick={() => navigate("/checkout")}
                   className="w-full py-3 bg-blue-600 text-white font-semibold rounded-lg hover:bg-blue-700 transition shadow-md hover:shadow-lg"
                 >
                   Proceed to Checkout
                 </button>
-
                 <Link
                   to="/listing"
                   className="block w-full py-3 mt-3 text-center border-2 border-blue-600 text-blue-600 font-semibold rounded-lg hover:bg-blue-50 transition"
                 >
                   Continue Shopping
                 </Link>
-
-                {/* Security Badge */}
+                {}
                 <div className="mt-6 pt-6 border-t border-gray-200">
                   <div className="flex items-center gap-2 text-sm text-gray-600">
                     <svg

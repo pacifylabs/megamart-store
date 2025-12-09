@@ -1,10 +1,8 @@
 import { useState } from "react";
 import { Package } from "lucide-react";
-
 export function LazyImage({ src, alt, className, containerClassName }) {
   const [loaded, setLoaded] = useState(false);
   const [error, setError] = useState(false);
-
   return (
     <div className={`relative ${containerClassName}`}>
       {!loaded && !error && (
@@ -12,7 +10,6 @@ export function LazyImage({ src, alt, className, containerClassName }) {
           <Package className="w-12 h-12 text-gray-400" />
         </div>
       )}
-      
       {error ? (
         <div className="w-full h-full bg-gray-300 rounded flex items-center justify-center">
           <Package className="w-12 h-12 text-gray-500" />

@@ -19,7 +19,6 @@ import summer from "../assets/summer.png";
 import vegetables from "../assets/vegetables.jpeg";
 import wearable from "../assets/wearable.png";
 import xiaomi from "../assets/xiaomi.jpeg";
-
 export const phones = [
   {
     id: 1,
@@ -127,7 +126,6 @@ export const phones = [
     category: "Phones",
   },
 ];
-
 export const heroSlides = [
   {
     titleTop: "Best Deal Online on smart watches",
@@ -151,7 +149,6 @@ export const heroSlides = [
     bg: "#0b2340",
   },
 ];
-
 export const categories = [
   {
     name: "Mobile",
@@ -173,7 +170,6 @@ export const categories = [
   },
   { name: "Accessories", img: accesories },
 ];
-
 export const brandSlides = [
   {
     title: "IPHONE",
@@ -211,7 +207,6 @@ export const brandSlides = [
     color: "black",
   },
 ];
-
 export const essentials = [
   { name: "Daily Essentials", img: daily, alt: "Daily Essentials" },
   { name: "Vegetables", img: vegetables, alt: "Vegetables" },
@@ -220,7 +215,6 @@ export const essentials = [
   { name: "Mango", img: mango, alt: "Mango" },
   { name: "Cherry", img: cherry, alt: "Cherry" },
 ];
-
 export const mostPopularCategories = [
   "Staples",
   "Beverages",
@@ -231,7 +225,6 @@ export const mostPopularCategories = [
   "Snacks & Foods",
   "Dairy & Bakery",
 ];
-
 export const customerServices = [
   "About Us",
   "Terms & Conditions",

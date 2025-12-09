@@ -1,14 +1,9 @@
 // types/user.types.js
-/**
- * User type definitions for consistent data structure
- */
-
 export const UserRoles = {
   USER: 'user',
   ADMIN: 'admin',
   VENDOR: 'vendor'
 };
-
 export const OrderStatus = {
   PENDING: 'pending',
   PROCESSING: 'processing',
@@ -16,14 +11,11 @@ export const OrderStatus = {
   DELIVERED: 'delivered',
   CANCELLED: 'cancelled'
 };
-
 export const AddressType = {
   HOME: 'home',
   OFFICE: 'office',
   OTHER: 'other'
 };
-
-// User profile data structure
 export const userProfileSchema = {
   id: '',
   email: '',
@@ -42,14 +34,10 @@ export const userProfileSchema = {
   createdAt: '',
   updatedAt: ''
 };
-
-// API Response structures
 export const API_RESPONSE = {
   SUCCESS: 'success',
   ERROR: 'error'
 };
-
-// Error messages
 export const ERROR_MESSAGES = {
   NETWORK_ERROR: 'Network error. Please check your connection.',
   UNAUTHORIZED: 'Session expired. Please login again.',

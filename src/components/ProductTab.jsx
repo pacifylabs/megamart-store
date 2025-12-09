@@ -1,9 +1,8 @@
 function ProductTabs({ product }) {
   const [activeTab, setActiveTab] = useState("description");
-
   return (
     <div>
-      {/* Tab Headers */}
+      {}
       <div className="border-b border-gray-300">
         <div className="flex gap-8">
           <button
@@ -38,8 +37,7 @@ function ProductTabs({ product }) {
           </button>
         </div>
       </div>
-
-      {/* Tab Content */}
+      {}
       <div className="py-6">
         {activeTab === "description" && (
           <div className="text-gray-700 space-y-4">

@@ -1,15 +1,9 @@
 // src/components/profile/PaymentMethods.jsx
 import React from "react";
-
-/**
- * Payment methods preview. Minimal and secure (no card numbers).
- * Real project: integrate with tokenized payment methods only.
- */
 const mockPayments = [
   { id: 1, type: "Visa", last4: "4242", expiry: "08/26" },
   { id: 2, type: "Mastercard", last4: "8899", expiry: "03/27" },
 ];
-
 export default function PaymentMethods() {
   return (
     <div className="bg-white dark:bg-slate-800 rounded-xl p-5 border border-gray-200 dark:border-slate-700 shadow-sm">
@@ -17,7 +11,6 @@ export default function PaymentMethods() {
         <h3 className="text-lg font-semibold text-gray-900 dark:text-slate-100">Payment Methods</h3>
         <button className="text-sm text-blue-600 hover:underline">Manage</button>
       </div>
-
       <ul className="space-y-3">
         {mockPayments.map((p) => (
           <li key={p.id} className="flex items-center justify-between">

@@ -1,12 +1,7 @@
 // services/api/userService.js
 import API from '../../utils/api-axios';
 import { ERROR_MESSAGES } from '../../common/types';
-
-/**
- * User profile API service
- */
 export const userService = {
-  // Get user profile
   getProfile: async (userId) => {
     try {
       const response = await API.get(`/users/${userId}`);
@@ -22,8 +17,6 @@ export const userService = {
       };
     }
   },
-
-  // Update user profile
   updateProfile: async (userId, userData) => {
     try {
       const response = await API.patch(`/users/${userId}`, userData);
@@ -41,19 +34,15 @@ export const userService = {
       };
     }
   },
-
-  // Upload profile image
   uploadProfileImage: async (userId, imageFile) => {
     try {
       const formData = new FormData();
       formData.append('profileImage', imageFile);
-      
       const response = await API.post(`/users/${userId}/profile-image`, formData, {
         headers: {
           'Content-Type': 'multipart/form-data'
         }
       });
-      
       return {
         success: true,
         data: response.data,
@@ -67,8 +56,6 @@ export const userService = {
       };
     }
   },
-
-  // Change password
   changePassword: async (userId, passwordData) => {
     try {
       const response = await API.post(`/users/${userId}/change-password`, passwordData);
@@ -86,12 +73,7 @@ export const userService = {
     }
   }
 };
-
-/**
- * Orders API service
- */
 export const orderService = {
-  // Get user orders
   getOrders: async (params = {}) => {
     try {
       const response = await API.get('/orders', { params });
@@ -107,8 +89,6 @@ export const orderService = {
       };
     }
   },
-
-  // Get order details
   getOrder: async (orderId) => {
     try {
       const response = await API.get(`/orders/${orderId}`);
@@ -125,12 +105,7 @@ export const orderService = {
     }
   }
 };
-
-/**
- * Wishlist API service
- */
 export const wishlistService = {
-  // Get user wishlist
   getWishlist: async () => {
     try {
       const response = await API.get('/wishlist');
@@ -146,8 +121,6 @@ export const wishlistService = {
       };
     }
   },
-
-  // Add item to wishlist
   addToWishlist: async (productId) => {
     try {
       const response = await API.post('/wishlist', { productId });
@@ -164,8 +137,6 @@ export const wishlistService = {
       };
     }
   },
-
-  // Remove item from wishlist
   removeFromWishlist: async (productId) => {
     try {
       const response = await API.delete(`/wishlist/${productId}`);

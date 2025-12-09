@@ -6,7 +6,6 @@ import {
   Heart, 
   CreditCard 
 } from "lucide-react";
-
 export const profileMenuItems = [
   {
     id: "profile",

@@ -3,7 +3,6 @@ import { User, Mail, Phone, MapPin, Save, Calendar, Globe, Edit, Loader } from "
 import { useState, useEffect } from "react";
 import { useAuth } from "../../contexts/AuthContext";
 import { userService } from "../../services/api/userService";
-
 export default function ProfileForm() {
   const { user: authUser, updateUserProfile } = useAuth();
   const [formData, setFormData] = useState({
@@ -23,8 +22,6 @@ export default function ProfileForm() {
   const [fetchLoading, setFetchLoading] = useState(true);
   const [success, setSuccess] = useState(false);
   const [error, setError] = useState("");
-
-  // Initialize form with auth user data
   useEffect(() => {
     if (authUser) {
       setFormData({
@@ -42,7 +39,6 @@ export default function ProfileForm() {
       setFetchLoading(false);
     }
   }, [authUser]);
-
   const formatDateForInput = (dateString) => {
     if (!dateString) return "";
     try {
@@ -52,7 +48,6 @@ export default function ProfileForm() {
       return "";
     }
   };
-
   const handleChange = (e) => {
     const { name, value } = e.target;
     setFormData(prev => ({
@@ -60,15 +55,11 @@ export default function ProfileForm() {
       [name]: value
     }));
   };
-
   const handleSubmit = async (e) => {
     e.preventDefault();
-    
     try {
       setLoading(true);
       setError("");
-      
-      // Prepare data for API
       const submitData = {
         firstName: formData.firstName.trim() || null,
         lastName: formData.lastName.trim() || null,
@@ -80,19 +71,11 @@ export default function ProfileForm() {
         country: formData.country.trim() || null,
         postalCode: formData.postalCode.trim() || null
       };
-      
-      
-      // Call API service
       const result = await userService.updateProfile(authUser.id, submitData);
-      
       if (result.success) {
-        
-        // Update auth context with new user data
         await updateUserProfile(result.data);
-        
         setSuccess(true);
         setEditing(false);
-        
         setTimeout(() => setSuccess(false), 3000);
       } else {
         setError(result.error || "Failed to update profile");
@@ -103,15 +86,12 @@ export default function ProfileForm() {
       setLoading(false);
     }
   };
-
   const handleEdit = () => {
     setEditing(true);
     setSuccess(false);
     setError("");
   };
-
   const handleCancel = () => {
-    // Reset form data to original user data
     if (authUser) {
       setFormData({
         firstName: authUser.firstName || "",
@@ -129,11 +109,9 @@ export default function ProfileForm() {
     setEditing(false);
     setError("");
   };
-
   if (fetchLoading) {
     return <ProfileFormSkeleton />;
   }
-
   if (!authUser) {
     return (
       <div className="bg-white rounded-xl shadow-sm border border-gray-200 p-6">
@@ -143,7 +121,6 @@ export default function ProfileForm() {
       </div>
     );
   }
-
   return (
     <div className="bg-white rounded-xl p-6">
       <div className="flex items-center justify-between mb-6">
@@ -159,19 +136,16 @@ export default function ProfileForm() {
           </button>
         )}
       </div>
-
       {success && (
         <div className="mb-4 p-3 bg-green-50 border border-green-200 rounded-lg text-green-600 text-sm">
           Profile updated successfully!
         </div>
       )}
-
       {error && (
         <div className="mb-4 p-3 bg-red-50 border border-red-200 rounded-lg text-red-600 text-sm">
           {error}
         </div>
       )}
-
       <form onSubmit={handleSubmit}>
         <div className="grid grid-cols-1 md:grid-cols-2 gap-6">
           <InputField
@@ -184,7 +158,6 @@ export default function ProfileForm() {
             placeholder="Enter your first name"
             required
           />
-
           <InputField
             label="Last Name"
             name="lastName"
@@ -194,7 +167,6 @@ export default function ProfileForm() {
             placeholder="Enter your last name"
             required
           />
-
           <InputField
             icon={Mail}
             label="Email Address"
@@ -205,7 +177,6 @@ export default function ProfileForm() {
             disabled={true}
             required
           />
-
           <InputField
             icon={Phone}
             label="Phone Number"
@@ -216,7 +187,6 @@ export default function ProfileForm() {
             disabled={!editing}
             placeholder="+1 (555) 123-4567"
           />
-
           <InputField
             icon={Calendar}
             label="Date of Birth"
@@ -226,19 +196,16 @@ export default function ProfileForm() {
             onChange={handleChange}
             disabled={!editing}
           />
-
           <GenderSelect
             value={formData.gender}
             onChange={handleChange}
             disabled={!editing}
           />
-
           <AddressField
             value={formData.address}
             onChange={handleChange}
             disabled={!editing}
           />
-
           <InputField
             icon={MapPin}
             label="City"
@@ -248,7 +215,6 @@ export default function ProfileForm() {
             disabled={!editing}
             placeholder="Enter your city"
           />
-
           <InputField
             icon={Globe}
             label="Country"
@@ -258,7 +224,6 @@ export default function ProfileForm() {
             disabled={!editing}
             placeholder="Enter your country"
           />
-
           <InputField
             label="Postal Code"
             name="postalCode"
@@ -268,7 +233,6 @@ export default function ProfileForm() {
             placeholder="12345"
           />
         </div>
-
         {editing && (
           <FormActions
             loading={loading}
@@ -276,13 +240,10 @@ export default function ProfileForm() {
           />
         )}
       </form>
-
       <ProfileStatus user={authUser} />
     </div>
   );
 }
-
-// Sub-components
 function InputField({ icon: Icon, label, type = "text", required = false, ...props }) {
   return (
     <div>
@@ -305,7 +266,6 @@ function InputField({ icon: Icon, label, type = "text", required = false, ...pro
     </div>
   );
 }
-
 function GenderSelect({ value, onChange, disabled }) {
   return (
     <div>
@@ -335,7 +295,6 @@ function GenderSelect({ value, onChange, disabled }) {
     </div>
   );
 }
-
 function AddressField({ value, onChange, disabled }) {
   return (
     <div className="md:col-span-2">
@@ -354,7 +313,6 @@ function AddressField({ value, onChange, disabled }) {
     </div>
   );
 }
-
 function FormActions({ loading, onCancel }) {
   return (
     <div className="flex gap-3 mt-6">
@@ -386,7 +344,6 @@ function FormActions({ loading, onCancel }) {
     </div>
   );
 }
-
 function ProfileStatus({ user }) {
   return (
     <div className="mt-6 pt-6 border-t border-gray-200">
@@ -413,7 +370,6 @@ function ProfileStatus({ user }) {
     </div>
   );
 }
-
 function ProfileFormSkeleton() {
   return (
     <div className="bg-white rounded-xl p-6">

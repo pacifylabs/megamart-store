@@ -8,7 +8,6 @@ import TopElectronics from "../components/TopElectronics";
 import Essentials from "../components/Essentials";
 import Footer from "../components/Footer";
 import { essentials, mostPopularCategories, customerServices } from "../data/data";
-
 export default function HeroPage() {
   return (
     <>

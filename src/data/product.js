@@ -3,22 +3,18 @@ import m33 from "../assets/galaxy m33.jpeg";
 import m53 from "../assets/galaxy m53.jpeg";
 import s22 from "../assets/s22 ultra.jpeg";
 import s23 from "../assets/s23 ultra.jpeg";
-
 import iphone from "../assets/iphone.jpeg";
 import oppo from "../assets/oppo.jpeg";
 import realme from "../assets/realme.jpeg";
 import samsung from "../assets/samsung.jpeg";
 import xiaomi from "../assets/xiaomi.jpeg";
-
 import cherry from "../assets/cherry.jpeg";
 import daily from "../assets/daily.jpeg";
 import fruits from "../assets/fruits.jpeg";
 import mango from "../assets/mango.jpeg";
 import strawberry from "../assets/strawberry.jpeg";
 import vegetables from "../assets/vegetables.jpeg";
-
 export const flatProducts = [
-  // ---- Phones ----
   {
     id: 1,
     name: "Galaxy S22 Ultra",
@@ -69,8 +65,6 @@ export const flatProducts = [
     category: "Phones",
     image: s23,
   },
-
-  // ---- Brands (smartphones) ----
   {
     id: 6,
     name: "iPhone 14 Pro Max",
@@ -121,8 +115,6 @@ export const flatProducts = [
     category: "Phones",
     image: oppo,
   },
-
-  // ---- Essentials (Groceries / Daily) ----
   {
     id: 11,
     name: "Daily Essentials Pack",
@@ -184,7 +176,6 @@ export const flatProducts = [
     image: cherry,
   },
 ];
-
 export const phones = flatProducts.filter((p) => p.category === "Phones");
 const products = flatProducts;
 export { products };

@@ -1,22 +1,19 @@
 import { Package, Clock, CheckCircle, XCircle, Eye, Trash2, ArrowLeft } from "lucide-react";
 import { useState, useEffect } from "react";
-
+import { CURRENCY_SIGN } from "../utils/api-axios";
 export default function OrderManagementPage() {
   const [orders, setOrders] = useState([]);
   const [selectedOrder, setSelectedOrder] = useState(null);
   const [filterStatus, setFilterStatus] = useState('all');
-
   useEffect(() => {
     loadOrders();
   }, []);
-
   const loadOrders = () => {
     const savedOrders = localStorage.getItem('orders');
     if (savedOrders) {
       setOrders(JSON.parse(savedOrders));
     }
   };
-
   const deleteOrder = (orderId) => {
     if (window.confirm('Are you sure you want to delete this order?')) {
       const updatedOrders = orders.filter(order => order.id !== orderId);
@@ -27,7 +24,6 @@ export default function OrderManagementPage() {
       }
     }
   };
-
   const updateOrderStatus = (orderId, newStatus) => {
     const updatedOrders = orders.map(order => 
       order.id === orderId ? { ...order, status: newStatus } : order
@@ -38,7 +34,6 @@ export default function OrderManagementPage() {
       setSelectedOrder({ ...selectedOrder, status: newStatus });
     }
   };
-
   const getStatusColor = (status) => {
     switch (status) {
       case 'pending':
@@ -53,7 +48,6 @@ export default function OrderManagementPage() {
         return 'bg-gray-100 text-gray-800 border-gray-300';
     }
   };
-
   const getStatusIcon = (status) => {
     switch (status) {
       case 'pending':
@@ -68,7 +62,6 @@ export default function OrderManagementPage() {
         return <Package className="w-4 h-4" />;
     }
   };
-
   const formatDate = (dateString) => {
     const date = new Date(dateString);
     return date.toLocaleDateString('en-US', {
@@ -79,11 +72,9 @@ export default function OrderManagementPage() {
       minute: '2-digit'
     });
   };
-
   const filteredOrders = filterStatus === 'all' 
     ? orders 
     : orders.filter(order => order.status === filterStatus);
-
   return (
     <div className="min-h-screen bg-gray-50">
       <div className="bg-white border-b border-gray-200 px-4 py-4">
@@ -104,13 +95,12 @@ export default function OrderManagementPage() {
           </div>
         </div>
       </div>
-
       <div className="max-w-7xl mx-auto px-4 py-8">
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-          {/* Orders List */}
+          {}
           <div className="lg:col-span-2">
             <div className="bg-white rounded-lg border border-gray-200 overflow-hidden">
-              {/* Filter Tabs */}
+              {}
               <div className="border-b border-gray-200 bg-gray-50 px-6 py-3">
                 <div className="flex gap-2 flex-wrap">
                   {['all', 'pending', 'confirmed', 'delivered', 'cancelled'].map(status => (
@@ -133,8 +123,7 @@ export default function OrderManagementPage() {
                   ))}
                 </div>
               </div>
-
-              {/* Orders */}
+              {}
               <div className="divide-y divide-gray-200">
                 {filteredOrders.length === 0 ? (
                   <div className="p-12 text-center text-gray-500">
@@ -163,16 +152,14 @@ export default function OrderManagementPage() {
                           <p className="text-sm text-gray-600">{formatDate(order.date)}</p>
                         </div>
                         <div className="text-right">
-                          <p className="text-lg font-bold text-blue-600">₦{order.total.toLocaleString()}</p>
+                          <p className="text-lg font-bold text-blue-600">{CURRENCY_SIGN}{order.total.toLocaleString()}</p>
                           <p className="text-xs text-gray-600">{order.items.length} item(s)</p>
                         </div>
                       </div>
-                      
                       <div className="mt-3 pt-3 border-t border-gray-200">
                         <p className="text-sm font-medium text-gray-900">{order.customerInfo.fullName}</p>
                         <p className="text-xs text-gray-600">{order.customerInfo.phone}</p>
                       </div>
-
                       <div className="mt-3 flex gap-2">
                         <button
                           onClick={(e) => {
@@ -201,8 +188,7 @@ export default function OrderManagementPage() {
               </div>
             </div>
           </div>
-
-          {/* Order Details Panel */}
+          {}
           <div className="lg:col-span-1">
             <div className="bg-white rounded-lg border border-gray-200 sticky top-4">
               {selectedOrder ? (
@@ -216,19 +202,16 @@ export default function OrderManagementPage() {
                       <XCircle className="w-5 h-5" />
                     </button>
                   </div>
-
                   <div className="space-y-4">
-                    {/* Order Info */}
+                    {}
                     <div>
                       <p className="text-sm font-medium text-gray-600 mb-1">Order ID</p>
                       <p className="text-sm font-semibold">{selectedOrder.id}</p>
                     </div>
-
                     <div>
                       <p className="text-sm font-medium text-gray-600 mb-1">Order Date</p>
                       <p className="text-sm">{formatDate(selectedOrder.date)}</p>
                     </div>
-
                     <div>
                       <p className="text-sm font-medium text-gray-600 mb-2">Status</p>
                       <select
@@ -242,8 +225,7 @@ export default function OrderManagementPage() {
                         <option value="cancelled">Cancelled</option>
                       </select>
                     </div>
-
-                    {/* Customer Info */}
+                    {}
                     <div className="pt-4 border-t border-gray-200">
                       <h3 className="text-sm font-semibold text-gray-900 mb-3">Customer Information</h3>
                       <div className="space-y-2">
@@ -268,14 +250,12 @@ export default function OrderManagementPage() {
                         </div>
                       </div>
                     </div>
-
-                    {/* Payment Method */}
+                    {}
                     <div className="pt-4 border-t border-gray-200">
                       <h3 className="text-sm font-semibold text-gray-900 mb-2">Payment Method</h3>
                       <p className="text-sm capitalize">{selectedOrder.paymentMethod.replace('-', ' ')}</p>
                     </div>
-
-                    {/* Order Items */}
+                    {}
                     <div className="pt-4 border-t border-gray-200">
                       <h3 className="text-sm font-semibold text-gray-900 mb-3">Order Items</h3>
                       <div className="space-y-3">
@@ -293,29 +273,27 @@ export default function OrderManagementPage() {
                               )}
                               <p className="text-xs text-gray-600">Qty: {item.qty}</p>
                               <p className="text-sm font-semibold text-blue-600 mt-1">
-                                ₦{(item.price * item.qty).toLocaleString()}
+                                {CURRENCY_SIGN}{(item.price * item.qty).toLocaleString()}
                               </p>
                             </div>
                           </div>
                         ))}
                       </div>
                     </div>
-
-                    {/* Order Total */}
+                    {}
                     <div className="pt-4 border-t-2 border-gray-300">
                       <div className="flex justify-between items-center">
                         <span className="text-lg font-bold text-gray-900">Total</span>
                         <span className="text-xl font-bold text-blue-600">
-                          ₦{selectedOrder.total.toLocaleString()}
+                          {CURRENCY_SIGN}{selectedOrder.total.toLocaleString()}
                         </span>
                       </div>
                     </div>
-
-                    {/* Actions */}
+                    {}
                     <div className="pt-4 space-y-2">
                       <button
                         onClick={() => {
-                          const message = `Order Update:\n\nOrder ID: ${selectedOrder.id}\nStatus: ${selectedOrder.status}\nTotal: ₦${selectedOrder.total}\n\nCustomer: ${selectedOrder.customerInfo.fullName}\nPhone: ${selectedOrder.customerInfo.phone}`;
+                          const message = `Order Update:\n\nOrder ID: ${selectedOrder.id}\nStatus: ${selectedOrder.status}\nTotal: {CURRENCY_SIGN}${selectedOrder.total}\n\nCustomer: ${selectedOrder.customerInfo.fullName}\nPhone: ${selectedOrder.customerInfo.phone}`;
                           const whatsappUrl = `https://wa.me/${selectedOrder.customerInfo.phone}?text=${encodeURIComponent(message)}`;
                           window.open(whatsappUrl, "_blank");
                         }}

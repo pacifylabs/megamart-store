@@ -6,15 +6,12 @@ import { CartProvider } from "./context/CartContext";
 import Carts from "./pages/Carts";
 import HeroPage from "./pages/HeroPage";
 import ListingPage from "./pages/ListingPage";
-
 import Login from "./pages/Login";
 import Register from "./pages/Register";
 import ProfilePage from "./pages/ProfilePage";
 import OrderManagementPage from "./pages/OrderPage";
 import ResetPasswordPage from "./pages/ForgotPasswordPage";
 import RequestResetLinkPage from "./pages/RequestResetLinkPage";
-
-
 export default function App() {
   return (
     <AuthProvider>

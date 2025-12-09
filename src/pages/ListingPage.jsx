@@ -4,35 +4,25 @@ import ProductCard from "../components/ProductCard";
 import Header from "../components/Header";
 import Footer from "../components/Footer";
 import API, { CURRENCY_SIGN } from "../utils/api-axios";
-
 const currency = CURRENCY_SIGN;
-
 export default function ListingPage() {
   const [products, setProducts] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
-  
-  // Filter states
   const [categories, setCategories] = useState([]);
   const [subCategories, setSubCategories] = useState([]);
   const [allCategoriesData, setAllCategoriesData] = useState([]);
   const [selectedCategoryId, setSelectedCategoryId] = useState("All");
   const [selectedSubCategoryId, setSelectedSubCategoryId] = useState("All");
   const [selectedPriceRange, setSelectedPriceRange] = useState([]);
-  
-  // UI states - These will be passed to Header
   const [sortOption, setSortOption] = useState("default");
   const [searchQuery, setSearchQuery] = useState("");
   const [showFilters, setShowFilters] = useState(false);
   const [viewMode, setViewMode] = useState("grid");
-  
-  // Pagination states
   const [currentPage, setCurrentPage] = useState(1);
   const [itemsPerPage, setItemsPerPage] = useState(12);
   const [totalPages, setTotalPages] = useState(1);
   const [totalItems, setTotalItems] = useState(0);
-
-  // Price range options
   const priceRanges = [
     { id: "under-100", label: `Under ${currency}100`, min: 0, max: 100 },
     { id: "100-500", label: `${currency}100 - ${currency}500`, min: 100, max: 500 },
@@ -40,57 +30,39 @@ export default function ListingPage() {
     { id: "1000-5000", label: `${currency}1000 - ${currency}5000`, min: 1000, max: 5000 },
     { id: "above-5000", label: `Above ${currency}5000`, min: 5000, max: Infinity }
   ];
-
-  // Calculate active filters count for Header badge
   const activeFiltersCount = 
     (selectedCategoryId !== "All" ? 1 : 0) +
     (selectedSubCategoryId !== "All" ? 1 : 0) +
     selectedPriceRange.length +
     (searchQuery && searchQuery.trim() ? 1 : 0);
-
-  // Helper function to get category name from ID
   const getCategoryName = (categoryId) => {
     if (categoryId === "All") return "All Products";
     const category = allCategoriesData.find(cat => cat.id === categoryId || cat._id === categoryId);
     return category ? category.name : "Unknown";
   };
-
-  // Helper function to get subcategory name from ID
   const getSubCategoryName = (subCategoryId) => {
     if (subCategoryId === "All") return "All";
     const subCategory = subCategories.find(sub => sub.id === subCategoryId || sub._id === subCategoryId);
     return subCategory ? subCategory.name : "Unknown";
   };
-
-  // Fetch products from API
   const fetchProducts = async (page = 1) => {
     try {
       setLoading(true);
       setError(null);
-
-      // Build API params based on current filters
       const buildApiParams = () => {
         const params = {
           page: currentPage,
           limit: itemsPerPage,
         };
-
-        // Add search query if it exists
         if (searchQuery && searchQuery.trim()) {
           params.search = searchQuery.trim();
         }
-
-        // Add category filter if not "All"
         if (selectedCategoryId !== 'All') {
           params.category = selectedCategoryId;
         }
-
-        // Add subcategory filter if not "All"
         if (selectedSubCategoryId !== 'All') {
           params.subcategory = selectedSubCategoryId;
         }
-
-        // Add price range filter to API call
         if (selectedPriceRange.length > 0) {
           const minPrices = selectedPriceRange.map(rangeId => {
             const range = priceRanges.find(r => r.id === rangeId);
@@ -100,48 +72,34 @@ export default function ListingPage() {
             const range = priceRanges.find(r => r.id === rangeId);
             return range ? (range.max === Infinity ? 999999999 : range.max) : 999999999;
           });
-
           if (minPrices.length > 0) {
             params.minPrice = Math.min(...minPrices);
             params.maxPrice = Math.max(...maxPrices);
           }
         }
-
         return params;
       };
-
       const params = buildApiParams();
-
-      // Make API call
       const response = await API.get('/products/all', { params });
-      
-      // Process response - handle different structures
       let productsData = [];
       let paginationData = {};
-      
       if (response.data) {
-        // Case 1: Nested structure { data: { data: [], pagination: {} } }
         if (response.data.data && Array.isArray(response.data.data)) {
           productsData = response.data.data;
           paginationData = response.data.pagination || response.data;
         } 
-        // Case 2: Direct array response
         else if (Array.isArray(response.data)) {
           productsData = response.data;
         }
-        // Case 3: Products array in products field
         else if (response.data.products && Array.isArray(response.data.products)) {
           productsData = response.data.products;
           paginationData = response.data.pagination || {};
         }
-        // Case 4: Direct object with data array
         else if (Array.isArray(response.data.data)) {
           productsData = response.data.data;
           paginationData = response.data;
         }
       }
-      
-      // Transform products to match ProductCard expectations
       const processedProducts = productsData.map((product) => {
         return {
           id: product._id || product.id,
@@ -159,16 +117,11 @@ export default function ListingPage() {
           stock: product.stock || 0,
           sku: product.sku || '',
           specification: product.specification || {},
-          // Keep original category/subcategory IDs for filtering
           categoryId: product.category?._id || product.category?.id || product.category,
           subCategoryId: product.subCategory?._id || product.subCategory?.id || product.subCategory
         };
       });
-
-      // APPLY CLIENT-SIDE FILTERING ONLY IF API DOESN'T SUPPORT THE FILTERS
       let filteredProducts = processedProducts;
-
-      // Client-side category filtering (if API didn't handle it properly)
       if (selectedCategoryId !== 'All') {
         const beforeCount = filteredProducts.length;
         filteredProducts = filteredProducts.filter(product => {
@@ -177,8 +130,6 @@ export default function ListingPage() {
           return matchesCategory;
         });
       }
-
-      // Client-side subcategory filtering (if API didn't handle it properly)
       if (selectedSubCategoryId !== 'All') {
         const beforeCount = filteredProducts.length;
         filteredProducts = filteredProducts.filter(product => {
@@ -187,8 +138,6 @@ export default function ListingPage() {
           return matchesSubCategory;
         });
       }
-
-      // Client-side price range filtering (if API didn't handle it properly)
       if (selectedPriceRange.length > 0) {
         const beforeCount = filteredProducts.length;
         filteredProducts = filteredProducts.filter(product => {
@@ -196,7 +145,6 @@ export default function ListingPage() {
           const isInSelectedRange = selectedPriceRange.some(rangeId => {
             const range = priceRanges.find(r => r.id === rangeId);
             if (!range) return false;
-            
             const minPrice = range.min;
             const maxPrice = range.max === Infinity ? 999999999 : range.max;
             return productPrice >= minPrice && productPrice <= maxPrice;
@@ -204,30 +152,21 @@ export default function ListingPage() {
           return isInSelectedRange;
         });
       }
-
       setProducts(filteredProducts);
-      
-      // Update pagination
       if (paginationData.totalPages || paginationData.totalItems) {
-        // Use API pagination if available
         setTotalPages(paginationData.totalPages || 1);
         setTotalItems(paginationData.totalItems || filteredProducts.length);
         setCurrentPage(paginationData.currentPage || paginationData.page || 1);
       } else {
-        // Calculate pagination based on filtered results
         const totalItemsCount = filteredProducts.length;
         const totalPagesCount = Math.ceil(totalItemsCount / itemsPerPage) || 1;
-        
         setTotalPages(totalPagesCount);
         setTotalItems(totalItemsCount);
         setCurrentPage(page);
-        
-        // Adjust current page if it's beyond the new total pages
         if (page > totalPagesCount) {
           setCurrentPage(Math.max(1, totalPagesCount));
         }
       }
-
     } catch (err) {
       setError(err.response?.data?.message || "Failed to load products. Please try again later.");
       setProducts([]);
@@ -238,75 +177,53 @@ export default function ListingPage() {
       setLoading(false);
     }
   };
-
-  // Fetch categories from API
   const fetchCategories = async () => {
     try {
       const response = await API.get('/categories');
       const categoriesData = response.data || [];
       const activeCategories = categoriesData.filter(cat => cat.isActive !== false);
-      
-      // Store full category data with subcategories
       setAllCategoriesData(activeCategories);
-      
-      // Create category list with ID and name
       const categoryList = activeCategories.map(cat => ({
         id: cat._id || cat.id,
         name: cat.name
       }));
-
       setCategories([{ id: "All", name: "All" }, ...categoryList]);
-      
     } catch (err) {
       setCategories([{ id: "All", name: "All" }]);
     }
   };
-
-  // Fetch subcategories from API
   const fetchSubcategories = async (categoryId) => {
     if (categoryId === "All") {
       setSubCategories([{ id: "All", name: "All" }]);
       return;
     }
-
     try {
       const response = await API.get(`/categories/${categoryId}/subcategories`);
       const subcategoriesData = response.data || [];
-      
-      // Create subcategory list with ID and name
       const subcategoryList = subcategoriesData
         .filter(subCat => subCat.isActive !== false)
         .map(subCat => ({
           id: subCat._id || subCat.id,
           name: subCat.name
         }));
-      
       setSubCategories([{ id: "All", name: "All" }, ...subcategoryList]);
-      
     } catch (err) {
       console.error("Error fetching subcategories:", err);
       setSubCategories([{ id: "All", name: "All" }]);
     }
   };
-
-  // Initial data fetch
   useEffect(() => {
     const initializeData = async () => {
       await fetchCategories();
       await fetchProducts(1);
     };
-    
     initializeData();
   }, []);
-
-  // Update subcategories when category changes
   useEffect(() => {
     if (selectedCategoryId) {
       fetchSubcategories(selectedCategoryId);
     }
   }, [selectedCategoryId]);
-
-  // Handle search query from URL
   const location = useLocation();
   useEffect(() => {
     const params = new URLSearchParams(location.search);
@@ -315,20 +232,14 @@ export default function ListingPage() {
       setSearchQuery(searchQueryParam);
     }
   }, [location.search]);
-
-  // Fetch products when filters change or search query updates
   useEffect(() => {
-    fetchProducts();
-  }, [currentPage, selectedCategoryId, selectedSubCategoryId, sortOption, searchQuery]);
-
-  // Sort products function
+    fetchProducts(currentPage);
+  }, [currentPage, selectedCategoryId, selectedSubCategoryId, sortOption, searchQuery, selectedPriceRange, itemsPerPage]);
   const sortProducts = (productsToSort, sortOption) => {
     if (!productsToSort || productsToSort.length === 0 || sortOption === 'default') {
       return productsToSort;
     }
-
     const sortedProducts = [...productsToSort];
-    
     switch (sortOption) {
       case 'price-low':
         return sortedProducts.sort((a, b) => {
@@ -336,48 +247,36 @@ export default function ListingPage() {
           const priceB = b.price || 0;
           return priceA - priceB;
         });
-      
       case 'price-high':
         return sortedProducts.sort((a, b) => {
           const priceA = a.price || 0;
           const priceB = b.price || 0;
           return priceB - priceA;
         });
-      
       case 'name-asc':
         return sortedProducts.sort((a, b) => (a.name || '').localeCompare(b.name || ''));
-      
       case 'name-desc':
         return sortedProducts.sort((a, b) => (b.name || '').localeCompare(a.name || ''));
-      
       case 'newest':
         return sortedProducts.sort((a, b) => {
           return (b.id || '').toString().localeCompare((a.id || '').toString());
         });
-      
       case 'discount':
         return sortedProducts.sort((a, b) => {
           const discountA = a.discount || 0;
           const discountB = b.discount || 0;
           return discountB - discountA;
         });
-      
       default:
         return sortedProducts;
     }
   };
-
-  // Create sorted products derived state
   const sortedProducts = useMemo(() => {
     return sortProducts(products, sortOption);
   }, [products, sortOption]);
-
-  // Handle search input change
   const handleSearchChange = (e) => {
     const newSearchQuery = e.target.value;
     setSearchQuery(newSearchQuery);
-    
-    // Update URL without triggering a page reload
     const url = new URL(window.location);
     if (newSearchQuery.trim()) {
       url.searchParams.set('search', newSearchQuery);
@@ -386,22 +285,16 @@ export default function ListingPage() {
     }
     window.history.pushState({}, '', url);
   };
-
-  // Handle category change
   const handleCategoryChange = (categoryId) => {
     setSelectedCategoryId(categoryId);
     setSelectedSubCategoryId("All");
     setCurrentPage(1);
     setShowFilters(false);
   };
-
-  // Handle subcategory change
   const handleSubCategoryChange = (subCategoryId) => {
     setSelectedSubCategoryId(subCategoryId);
     setCurrentPage(1);
   };
-
-  // Handle price range toggle
   const handlePriceRangeToggle = (rangeId) => {
     setSelectedPriceRange(prev => 
       prev.includes(rangeId) 
@@ -410,8 +303,6 @@ export default function ListingPage() {
     );
     setCurrentPage(1);
   };
-
-  // Clear all filters
   const clearAllFilters = () => {
     setSelectedCategoryId("All");
     setSelectedSubCategoryId("All");
@@ -420,8 +311,6 @@ export default function ListingPage() {
     setSortOption("default");
     setCurrentPage(1);
   };
-
-  // Pagination functions
   const goToPage = (page) => {
     if (page >= 1 && page <= totalPages) {
       setCurrentPage(page);
@@ -429,31 +318,29 @@ export default function ListingPage() {
       window.scrollTo({ top: 0, behavior: 'smooth' });
     }
   };
-
   const goToNextPage = () => {
     if (currentPage < totalPages) {
       goToPage(currentPage + 1);
     }
   };
-
   const goToPrevPage = () => {
     if (currentPage > 1) {
       goToPage(currentPage - 1);
     }
   };
-
-  // Render pagination buttons
+  const handleItemsPerPageChange = (e) => {
+    const newItemsPerPage = Number(e.target.value);
+    setItemsPerPage(newItemsPerPage);
+    setCurrentPage(1);
+  };
   const renderPaginationButtons = () => {
     const buttons = [];
     const maxButtons = 5;
-    
     let startPage = Math.max(1, currentPage - Math.floor(maxButtons / 2));
     let endPage = Math.min(totalPages, startPage + maxButtons - 1);
-    
     if (endPage - startPage < maxButtons - 1) {
       startPage = Math.max(1, endPage - maxButtons + 1);
     }
-
     if (startPage > 1) {
       buttons.push(
         <button 
@@ -468,7 +355,6 @@ export default function ListingPage() {
         buttons.push(<span key="dots1" className="px-2 text-gray-500">...</span>);
       }
     }
-
     for (let i = startPage; i <= endPage; i++) {
       buttons.push(
         <button
@@ -484,7 +370,6 @@ export default function ListingPage() {
         </button>
       );
     }
-
     if (endPage < totalPages) {
       if (endPage < totalPages - 1) {
         buttons.push(<span key="dots2" className="px-2 text-gray-500">...</span>);
@@ -499,17 +384,13 @@ export default function ListingPage() {
         </button>
       );
     }
-
     return buttons;
   };
-
-  // Calculate display range
   const startIndex = totalItems > 0 ? (currentPage - 1) * itemsPerPage + 1 : 0;
   const endIndex = Math.min(currentPage * itemsPerPage, totalItems);
-
   return (
     <div className="min-h-screen bg-gray-50">
-      {/* Loading Overlay */}
+      {}
       {loading && (
         <div className="fixed inset-0 bg-black bg-opacity-50 flex items-center justify-center z-50">
           <div className="bg-white p-6 rounded-lg shadow-lg">
@@ -518,8 +399,7 @@ export default function ListingPage() {
           </div>
         </div>
       )}
-      
-      {/* Error Alert */}
+      {}
       {error && (
         <div className="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded relative m-4" role="alert">
           <strong className="font-bold">Error: </strong>
@@ -535,8 +415,7 @@ export default function ListingPage() {
           </button>
         </div>
       )}
-
-      {/* Header with listing page functionality */}
+      {}
       <Header 
         showBanner={true}
         showSearchBar={true}
@@ -552,10 +431,9 @@ export default function ListingPage() {
         searchQuery={searchQuery}
         setSearchQuery={setSearchQuery}
       />
-
-      {/* Main Content */}
+      {}
       <div className="max-w-[95%] mx-auto px-2 sm:px-6 py-4 sm:py-6">
-        {/* Breadcrumb */}
+        {}
         <div className="mb-4 text-sm text-gray-600">
           <Link to="/" className="hover:text-blue-600">Home</Link>
           <span className="mx-2">/</span>
@@ -569,8 +447,7 @@ export default function ListingPage() {
             </>
           )}
         </div>
-
-        {/* Results Summary */}
+        {}
         <div className="mb-4 flex items-center justify-between flex-wrap gap-2">
           <p className="text-sm text-gray-600">
             {totalItems > 0 ? (
@@ -587,9 +464,8 @@ export default function ListingPage() {
             </p>
           )}
         </div>
-
         <div className="grid grid-cols-1 lg:grid-cols-[260px_1fr] gap-4 sm:gap-6">
-          {/* Desktop Sidebar */}
+          {}
           <aside className="hidden lg:block">
             <div className="bg-white p-4 rounded-lg shadow-sm sticky top-24">
               <div className="flex items-center justify-between mb-4">
@@ -608,8 +484,7 @@ export default function ListingPage() {
                   </button>
                 )}
               </div>
-
-              {/* Categories */}
+              {}
               <div className="mb-6">
                 <h4 className="text-sm font-semibold mb-3 text-gray-700">Categories</h4>
                 <div className="space-y-2">
@@ -627,8 +502,7 @@ export default function ListingPage() {
                   ))}
                 </div>
               </div>
-
-              {/* Subcategories */}
+              {}
               {selectedCategoryId !== "All" && subCategories.length > 1 && (
                 <div className="mb-6 pt-4 border-t">
                   <h4 className="text-sm font-semibold mb-3 text-gray-700">Sub-Categories</h4>
@@ -648,8 +522,7 @@ export default function ListingPage() {
                   </div>
                 </div>
               )}
-
-              {/* Price Range */}
+              {}
               <div className="mb-6 pt-4 border-t">
                 <h4 className="text-sm font-semibold mb-3 text-gray-700">Price Range</h4>
                 <div className="space-y-2">
@@ -666,8 +539,7 @@ export default function ListingPage() {
                   ))}
                 </div>
               </div>
-
-              {/* Active Filters Summary */}
+              {}
               {activeFiltersCount > 0 && (
                 <div className="pt-4 border-t">
                   <h4 className="text-sm font-semibold mb-3 text-gray-700">Active Filters</h4>
@@ -724,8 +596,7 @@ export default function ListingPage() {
               )}
             </div>
           </aside>
-
-          {/* Mobile Filter Modal */}
+          {}
           {showFilters && (
             <div className="lg:hidden fixed inset-0 bg-black bg-opacity-50 z-30" onClick={() => setShowFilters(false)}>
               <div
@@ -743,8 +614,7 @@ export default function ListingPage() {
                     </svg>
                   </button>
                 </div>
-
-                {/* Categories */}
+                {}
                 <div className="mb-6">
                   <h4 className="text-sm font-semibold mb-3 text-gray-700">Categories</h4>
                   <div className="space-y-2">
@@ -762,8 +632,7 @@ export default function ListingPage() {
                     ))}
                   </div>
                 </div>
-
-                {/* Subcategories */}
+                {}
                 {selectedCategoryId !== "All" && subCategories.length > 1 && (
                   <div className="mb-6 pt-4 border-t">
                     <h4 className="text-sm font-semibold mb-3 text-gray-700">Sub-Categories</h4>
@@ -783,8 +652,7 @@ export default function ListingPage() {
                     </div>
                   </div>
                 )}
-
-                {/* Price Range */}
+                {}
                 <div className="mb-6 pt-4 border-t">
                   <h4 className="text-sm font-semibold mb-3 text-gray-700">Price Range</h4>
                   <div className="space-y-2">
@@ -801,8 +669,7 @@ export default function ListingPage() {
                     ))}
                   </div>
                 </div>
-
-                {/* Clear and Apply Buttons */}
+                {}
                 <div className="space-y-2 pt-4 border-t">
                   {activeFiltersCount > 0 && (
                     <button
@@ -825,8 +692,7 @@ export default function ListingPage() {
               </div>
             </div>
           )}
-
-          {/* Products Grid */}
+          {}
           <main>
             {sortedProducts.length === 0 && !loading ? (
               <div className="bg-white rounded-lg p-12 text-center">
@@ -861,14 +727,12 @@ export default function ListingPage() {
                     <ProductCard key={p.id} product={p} viewMode={viewMode} />
                   ))}
                 </div>
-
-                {/* Pagination */}
+                {}
                 {totalPages > 1 && (
                   <div className="mt-8 flex flex-col sm:flex-row items-center justify-between gap-4 bg-white p-4 rounded-lg shadow-sm">
                     <div className="text-sm text-gray-600">
                       Page <span className="font-semibold">{currentPage}</span> of <span className="font-semibold">{totalPages}</span>
                     </div>
-                    
                     <div className="flex items-center gap-2">
                       <button
                         onClick={goToPrevPage}
@@ -881,18 +745,15 @@ export default function ListingPage() {
                       >
                         Previous
                       </button>
-
                       <div className="hidden sm:flex items-center gap-1">
                         {renderPaginationButtons()}
                       </div>
-
-                      {/* Mobile: Show current page only */}
+                      {}
                       <div className="sm:hidden flex items-center gap-2">
                         <span className="text-sm text-gray-600">
                           {currentPage} / {totalPages}
                         </span>
                       </div>
-
                       <button
                         onClick={goToNextPage}
                         disabled={currentPage === totalPages || loading}
@@ -905,15 +766,11 @@ export default function ListingPage() {
                         Next
                       </button>
                     </div>
-
                     <div className="flex items-center gap-2 text-sm">
                       <span className="text-gray-600 hidden sm:inline">Show:</span>
                       <select
                         value={itemsPerPage}
-                        onChange={(e) => {
-                          setItemsPerPage(Number(e.target.value));
-                          setCurrentPage(1);
-                        }}
+                        onChange={handleItemsPerPageChange}
                         disabled={loading}
                         className="border border-gray-300 rounded-md px-3 py-2 text-sm focus:outline-none focus:ring-2 focus:ring-blue-200 disabled:bg-gray-100 disabled:cursor-not-allowed"
                       >

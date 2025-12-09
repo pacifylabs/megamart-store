@@ -1,10 +1,8 @@
 import { ShoppingCart } from "lucide-react";
 import { Link } from "react-router-dom";
 import { useCart } from "../../context/CartContext";
-
 export default function CartIcon() {
   const { cartCount } = useCart();
-
   return (
     <div className="max-w-7">
       <Link to="/carts" className="relative">

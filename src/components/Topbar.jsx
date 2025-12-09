@@ -1,5 +1,4 @@
 import React from "react";
-
 export default function TopNav() {
   const categories = [
     "Premium Fruits",
@@ -10,7 +9,6 @@ export default function TopNav() {
     "Home Improvement",
     "Sports, Toys&Luggage",
   ];
-
   return (
     <div className="bg-white px-3 sm:px- pt-2 pb-3 overflow-x-auto sm:overflow-x-hidden hide-scrollbar">
       <div className="max-w-[95%] mx-auto flex items-center gap-3 sm:gap-4 text-sm">

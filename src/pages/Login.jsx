@@ -3,7 +3,6 @@ import { Link, useNavigate } from "react-router-dom";
 import { useAuth } from "../context/AuthContext";
 import { ListFilter, Mail, Lock, Eye, EyeOff } from "lucide-react";
 import "../App.css";
-
 function LoginPage() {
   const [form, setForm] = useState({ email: "", password: "" });
   const [error, setError] = useState("");
@@ -12,23 +11,17 @@ function LoginPage() {
   const [loading, setLoading] = useState(false);
   const navigate = useNavigate();
   const { handleLogin } = useAuth();
-
   const handleSubmit = async (e) => {
     e.preventDefault();
     setError("");
     setSuccess("");
     setLoading(true);
-
     try {
-      // Use handleLogin from AuthContext
       const response = await handleLogin(form);
       setSuccess("Login successful! Redirecting...");
-      
-      // Short delay to show success message and ensure state updates
       setTimeout(() => {
         navigate("/", { replace: true });
       }, 1000);
-      
     } catch (err) {
       if (err.response) {
         const errorMessage = err.response.data?.message || 
@@ -44,7 +37,6 @@ function LoginPage() {
       setLoading(false);
     }
   };
-
   const handleInputChange = (e) => {
     const { name, value } = e.target;
     setForm(prev => ({
@@ -52,10 +44,9 @@ function LoginPage() {
       [name]: value
     }));
   };
-
   return (
     <div className="min-h-screen flex flex-col bg-gray-50">
-      {/* Header */}
+      {}
       <div className="bg-white px-4 sm:px-6 py-3 border-b border-slate-100">
         <div className="max-w-[95%] mx-auto">
           <Link to="/" className="flex items-center gap-2 w-fit">
@@ -66,8 +57,7 @@ function LoginPage() {
           </Link>
         </div>
       </div>
-
-      {/* Login Form */}
+      {}
       <div className="flex-1 flex items-center justify-center px-4 py-12 logo-bg">
         <div className="w-full max-w-md">
           <div className="bg-white rounded-2xl shadow-lg border border-gray-200 p-8">
@@ -78,21 +68,18 @@ function LoginPage() {
               <h1 className="text-3xl font-bold text-gray-900 mb-2">Welcome Back 👋</h1>
               <p className="text-gray-600">Login to your MegaMart account</p>
             </div>
-
             {error && (
               <div className="mb-4 p-3 bg-red-50 border border-red-200 rounded-lg text-red-600 text-sm flex items-center gap-2">
                 <span className="font-medium">❌</span>
                 <span>{error}</span>
               </div>
             )}
-
             {success && (
               <div className="mb-4 p-3 bg-green-50 border border-green-200 rounded-lg text-green-600 text-sm flex items-center gap-2">
                 <span className="font-medium">✅</span>
                 <span>{success}</span>
               </div>
             )}
-
             <form onSubmit={handleSubmit} className="space-y-5">
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-2">
@@ -112,7 +99,6 @@ function LoginPage() {
                   />
                 </div>
               </div>
-
               <div>
                 <label className="block text-sm font-medium text-gray-700 mb-2">
                   Password
@@ -143,7 +129,6 @@ function LoginPage() {
                   </button>
                 </div>
               </div>
-
               <div className="flex items-center justify-between">
                 <label className="flex items-center">
                   <input
@@ -160,7 +145,6 @@ function LoginPage() {
                   Forgot Password?
                 </Link>
               </div>
-
               <button
                 type="submit"
                 disabled={loading}
@@ -195,7 +179,6 @@ function LoginPage() {
                 )}
               </button>
             </form>
-
             <div className="mt-6 text-center">
               <p className="text-sm text-gray-600">
                 Don't have an account yet?{" "}
@@ -213,5 +196,4 @@ function LoginPage() {
     </div>
   );
 }
-
 export default LoginPage;

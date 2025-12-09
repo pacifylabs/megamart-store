@@ -3,7 +3,6 @@ import { essential, phones } from "../data/data";
 import { ArrowLeft, ShoppingCart } from "lucide-react";
 import { useCart } from "../context/CartContext";
 import { Link } from "react-router-dom";
-
 export default function ProductDetails() {
   const { id } = useParams();
   const navigate = useNavigate();

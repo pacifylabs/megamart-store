@@ -5,7 +5,6 @@ import Header from "../components/Header";
 import { appConfig } from "../config/appConfig";
 import { useCart } from "../context/CartContext";
 import { CURRENCY_SIGN } from "../utils/api-axios";
-
 export default function CheckoutPage() {
   const navigate = useNavigate();
   const { cartItems, cartTotal, clearCart } = useCart();
@@ -20,31 +19,24 @@ export default function CheckoutPage() {
     country: "Nigeria",
   });
   const currency = CURRENCY_SIGN || '';
-
   useEffect(() => {
     if (!cartItems || cartItems.length === 0) {
       navigate("/listing");
     }
   }, [cartItems, navigate]);
-
   const handleInputChange = (e) => {
     setFormData({
       ...formData,
       [e.target.name]: e.target.value,
     });
   };
-
   const handlePlaceOrder = (e) => {
     e.preventDefault();
-
     if (!validateAddress()) return;
-    
     if (!formData.email) {
       alert("Please enter your email address");
       return;
     }
-
-    // Create order object
     const order = {
       id: 'ORD_' + Date.now(),
       date: new Date().toISOString(),
@@ -54,20 +46,13 @@ export default function CheckoutPage() {
       paymentMethod: paymentMethod,
       status: 'pending',
     };
-
-    // Save order to localStorage
     const existingOrders = JSON.parse(localStorage.getItem('orders') || '[]');
     existingOrders.push(order);
     localStorage.setItem('orders', JSON.stringify(existingOrders));
-
-    // Show success message
     alert(`Order placed successfully! Order ID: ${order.id}\n\nYou will pay ${currency}${cartTotal} on delivery.`);
-    
-    // Clear cart and redirect
     clearCart();
     navigate('/orders');
   };
-
   const validateAddress = () => {
     if (!formData.fullName || !formData.phone || !formData.address) {
       alert("Please fill in all required address fields (Name, Phone, and Address) before proceeding.");
@@ -75,24 +60,19 @@ export default function CheckoutPage() {
     }
     return true;
   };
-
   const handleChatSeller = () => {
     if (!validateAddress()) return;
-    
     const itemsList = cartItems.map(item =>
       `- ${item.name} (Qty: ${item.qty}) - ${currency}${item.price}`
     ).join('\n');
-
     const message = `Hi, I want to place an order:\n\n${itemsList}\n\nTotal: ${currency}${cartTotal}\n\nDelivery Address:\n${formData.fullName}\n${formData.phone}\n${formData.address}${formData.city ? ', ' + formData.city : ''}${formData.state ? ', ' + formData.state : ''}`;
     const whatsappNumber = appConfig.STORE_ORDER_CONTACT;
     const whatsappUrl = `https://wa.me/${whatsappNumber}?text=${encodeURIComponent(message)}`;
     window.open(whatsappUrl, "_blank");
   };
-
   if (!cartItems || cartItems.length === 0) {
     return null;
   }
-
   return (
     <div className="min-h-screen bg-gray-50">
       <Header showBanner={false} />
@@ -104,11 +84,9 @@ export default function CheckoutPage() {
           <ArrowLeft className="w-4 h-4" />
           <span className="text-sm font-medium">Back</span>
         </button>
-
         <h1 className="text-3xl font-bold mb-8">Checkout</h1>
-
         <div className="grid grid-cols-1 lg:grid-cols-3 gap-8">
-          {/* Order Summary */}
+          {}
           <div className="lg:col-span-2">
             <div className="bg-white rounded-lg border border-gray-200 p-6 mb-6">
               <h2 className="text-xl font-semibold mb-4">Order Summary</h2>
@@ -140,8 +118,7 @@ export default function CheckoutPage() {
                 </div>
               </div>
             </div>
-
-            {/* Shipping Information */}
+            {}
             <div className="bg-white rounded-lg border border-gray-200 p-6">
               <h2 className="text-xl font-semibold mb-4">Shipping Information</h2>
               <form onSubmit={handlePlaceOrder} className="space-y-4">
@@ -173,7 +150,6 @@ export default function CheckoutPage() {
                     />
                   </div>
                 </div>
-
                 <div>
                   <label className="block text-sm font-medium mb-1">
                     Phone Number <span className="text-red-500">*</span>
@@ -187,7 +163,6 @@ export default function CheckoutPage() {
                     required
                   />
                 </div>
-
                 <div>
                   <label className="block text-sm font-medium mb-1">
                     Address <span className="text-red-500">*</span>
@@ -201,7 +176,6 @@ export default function CheckoutPage() {
                     required
                   />
                 </div>
-
                 <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
                   <div>
                     <label className="block text-sm font-medium mb-1">City</label>
@@ -237,12 +211,10 @@ export default function CheckoutPage() {
               </form>
             </div>
           </div>
-
-          {/* Payment Method */}
+          {}
           <div className="lg:col-span-1">
             <div className="bg-white rounded-lg border border-gray-200 p-6 sticky top-4">
               <h2 className="text-xl font-semibold mb-4">Payment Method</h2>
-
               <div className="space-y-3 mb-6">
                 <label className="flex items-center gap-3 p-3 border-2 border-green-500 bg-green-50 rounded-lg cursor-pointer">
                   <input
@@ -263,14 +235,12 @@ export default function CheckoutPage() {
                     </svg>
                   </div>
                 </label>
-
                 <button
                   type="submit"
                   className="w-full bg-blue-600 text-white py-3 rounded-lg font-semibold hover:bg-blue-700 transition mb-3"
                 >
                   Place Order - Pay {cartItems[0]?.currency || ''}{cartTotal} on Delivery
                 </button>
-
                 <div className="relative my-4">
                 <div className="absolute inset-0 flex items-center">
                   <div className="w-full border-t border-gray-300"></div>
@@ -279,7 +249,6 @@ export default function CheckoutPage() {
                   <span className="px-2 bg-white text-gray-500">OR</span>
                 </div>
               </div>
-
               <button
                 onClick={handleChatSeller}
                 className="w-full bg-green-600 text-white py-3 rounded-lg font-semibold hover:bg-green-700 transition flex items-center justify-center gap-2"
@@ -289,7 +258,6 @@ export default function CheckoutPage() {
                 </svg>
                 Chat Seller on WhatsApp
               </button>
-
               <p className="text-xs text-gray-500 text-center mt-4">
                 Your order will be confirmed after review
               </p>

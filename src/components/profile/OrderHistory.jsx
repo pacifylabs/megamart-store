@@ -3,15 +3,6 @@ import React, { useState, useEffect } from "react";
 import { ShoppingCart, Loader, ExternalLink } from "lucide-react";
 import { Link } from "react-router-dom";
 import { orderService } from "../../services/api/userService";
-
-/**
- * OrderHistory: shows a preview of recent orders with API integration
- * API Endpoints:
- * - GET /orders?limit=3 - Get recent orders
- * - GET /orders/:id - Get specific order details
- */
-
-// Status configuration
 const statusConfig = {
   delivered: {
     color: "text-green-600 bg-green-50 border-green-200",
@@ -34,11 +25,8 @@ const statusConfig = {
     label: "Cancelled"
   }
 };
-
-// Order item component
 const OrderItem = ({ order }) => {
   const status = statusConfig[order.status.toLowerCase()] || statusConfig.pending;
-
   return (
     <li className="flex items-center justify-between p-4 rounded-lg border border-gray-100 hover:border-gray-200 transition-colors">
       <div className="flex-1 min-w-0">
@@ -65,8 +53,6 @@ const OrderItem = ({ order }) => {
     </li>
   );
 };
-
-// Empty state component
 const EmptyOrders = () => (
   <div className="text-center py-8">
     <ShoppingCart className="w-16 h-16 text-gray-300 mx-auto mb-4" />
@@ -81,8 +67,6 @@ const EmptyOrders = () => (
     </Link>
   </div>
 );
-
-// Loading skeleton
 const OrdersSkeleton = () => (
   <div className="space-y-4">
     {[1, 2, 3].map(i => (
@@ -98,8 +82,6 @@ const OrdersSkeleton = () => (
     ))}
   </div>
 );
-
-// Main component
 export default function OrderHistory({ 
   maxDisplay = 3,
   showViewAll = true 
@@ -107,28 +89,13 @@ export default function OrderHistory({
   const [orders, setOrders] = useState([]);
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
-
   useEffect(() => {
     loadOrders();
   }, []);
-
   const loadOrders = async () => {
     try {
       setLoading(true);
       setError(null);
-      
-      // TODO: Uncomment when API is ready
-      // const result = await orderService.getOrders({ limit: maxDisplay });
-      
-      // if (result.success) {
-      //   setOrders(result.data.orders || []);
-      // } else {
-      //   setError(result.error);
-      //   // Fallback to mock data for demo
-      //   setOrders(mockOrders);
-      // }
-      
-      // Using mock data for now
       const mockOrders = [
         { 
           id: "ORD-1001", 
@@ -152,21 +119,17 @@ export default function OrderHistory({
           items: 3
         },
       ];
-      
       setTimeout(() => {
         setOrders(mockOrders);
         setLoading(false);
       }, 1000);
-      
     } catch (err) {
       setError("Failed to load orders");
       setLoading(false);
     }
   };
-
   const displayedOrders = orders.slice(0, maxDisplay);
   const hasOrders = displayedOrders.length > 0;
-
   return (
     <div className="bg-white rounded-xl p-6">
       <div className="flex items-center justify-between mb-6">
@@ -176,13 +139,11 @@ export default function OrderHistory({
         </div>
         <ShoppingCart className="w-6 h-6 text-gray-400" />
       </div>
-
       {error && (
         <div className="mb-4 p-3 bg-yellow-50 border border-yellow-200 rounded-lg">
           <p className="text-yellow-700 text-sm">{error}</p>
         </div>
       )}
-
       {loading ? (
         <OrdersSkeleton />
       ) : hasOrders ? (
@@ -192,7 +153,6 @@ export default function OrderHistory({
               <OrderItem key={order.id} order={order} />
             ))}
           </ul>
-
           {showViewAll && orders.length > maxDisplay && (
             <div className="mt-6 pt-4 border-t border-gray-100">
               <Link

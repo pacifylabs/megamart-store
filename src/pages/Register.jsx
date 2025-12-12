@@ -65,6 +65,7 @@ function RegisterPage() {
       fullName: form.fullName.trim(),
       email: form.email.trim().toLowerCase(),
       password: form.password,
+      role: "customer"
     };
     try {
       const { data, status } = await signup(payload);
@@ -142,9 +143,6 @@ function RegisterPage() {
               <div className="mb-4 p-3 bg-green-50 border border-green-200 rounded-lg text-green-600 text-sm flex items-center gap-2">
                 <span className="font-medium">✅</span>
                 <span>{message}</span>
-                {message.includes("successful") && (
-                  <span className="text-xs">Redirecting to login...</span>
-                )}
               </div>
             )}
             <form onSubmit={handleSubmit} className="space-y-5">

@@ -12,6 +12,7 @@ import ProfilePage from "./pages/ProfilePage";
 import OrderManagementPage from "./pages/OrderPage";
 import ResetPasswordPage from "./pages/ForgotPasswordPage";
 import RequestResetLinkPage from "./pages/RequestResetLinkPage";
+import EmailVerificationPage from "./pages/verificationPage";
 export default function App() {
   return (
     <AuthProvider>
@@ -27,6 +28,7 @@ export default function App() {
             <Route path="/checkout" element={<CheckoutPage />} />
             <Route path="/reset-password" element={<ResetPasswordPage />} />
             <Route path="/forgot-password" element={<RequestResetLinkPage />} />
+            <Route path="/auth/verify-email" element={<EmailVerificationPage />} />
             <Route path="/profile/*" element={<ProfilePage />} />
             <Route path="/orders" element={<OrderManagementPage />} />
           </Routes>
